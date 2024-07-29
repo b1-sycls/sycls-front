@@ -6,6 +6,11 @@ const routes = [
         name: 'MainPage',
         component: () => import('@/components/MainPage.vue')
     },
+    {
+        path: '/department/:id',
+        // name: 'DepartmentInfo',
+        // component: () => import('@/components/department/DepartmentInfo')
+    },
 ];
 
 export const router = createRouter({

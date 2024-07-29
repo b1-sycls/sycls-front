@@ -1,9 +1,11 @@
 <template>
-  <p>하윙</p>
+  <p>하윙fffffff</p>
 </template>
 
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'MainPage',
   methods: {},
