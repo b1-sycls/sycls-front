@@ -7,7 +7,7 @@ const routes = [
         component: () => import('@/components/MainPage.vue')
     },
     {
-        path: '/order/checkout',
+        path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')
     },
