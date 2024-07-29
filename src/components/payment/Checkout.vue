@@ -9,7 +9,7 @@
           공연 설명 : {{ description }}
         </div>
         <div class="content-description">
-          공연 장소 : {{ }}
+          공연 장소 : {{ location }}
         </div>
         <div class="content-description">
           공연 회차 : {{ sequence }}
@@ -26,9 +26,6 @@
         <div class="ticket-price">가격: {{ ticketPrice }} / 1매</div>
         <div class="ticket-quantity">수량: {{ ticketQuantity }}매</div>
         <div class="ticket-seat">좌석 정보: {{ seatInfo }}</div>
-        <div class="seat-info">
-          테스트 환경 - 실제로 결제되지 않습니다.
-        </div>
       </div>
 
       <div class="total-price">총 결제 금액: ₩{{ totalPrice }}</div>
@@ -58,7 +55,7 @@ export default {
       contentId: '1',
       contentTitle: 'title1',
       description: '공연설명1',
-      contentLocation: '공연장소',
+      location: '공연장소',
       roundId: '1',
       sequence: '1',
       startDate: '2024-07-29',
@@ -76,15 +73,18 @@ export default {
       const response = (await axiosInstance.get('/v1/rounds/1', {
         headers: {
           "Content-Type": "application/json",
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJleHAiOjE3MjIyNDMxNjgsImlhdCI6MTcyMjIzOTU2OH0.exgvFQk4z3bvl2m6IjPTS7Th8XR4efumlX1PbQNnD-4'
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJleHAiOjE3MjIyNjU5MzQsImlhdCI6MTcyMjI2MjMzNH0.MWlNqgAYvkvSfXRaoIi8uPyAMLnZKl17NraPQQWJa8k'
         }
       })).data.data;
+
+      console.log("asdfsadfasfasfas")
+      console.log(response)
 
       // 데이터 업데이트
       this.contentId = response.contentId;
       this.contentTitle = response.contentTitle;
       this.description = response.description;
-      this.contentLocation = response.contentLocation;
+      this.location = response.location;
       this.roundId = response.roundId;
       this.sequence = response.sequence;
       this.startDate = response.startDate;
