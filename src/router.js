@@ -7,9 +7,19 @@ const routes = [
         component: () => import('@/components/MainPage.vue')
     },
     {
-        path: '/department/:id',
-        // name: 'DepartmentInfo',
-        // component: () => import('@/components/department/DepartmentInfo')
+        path: '/order/checkout',
+        name: 'CheckOut',
+        component: () => import('@/components/payment/Checkout.vue')
+    },
+    {
+        path: '/payment/success',
+        name: 'Success',
+        component: () => import('@/components/payment/Success.vue')
+    },
+    {
+        path: '/payment/fail',
+        name: 'Fail',
+        component: () => import('@/components/payment/Fail.vue')
     },
 ];
 
