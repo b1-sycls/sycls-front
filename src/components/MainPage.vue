@@ -7,6 +7,7 @@ import axiosInstance from "@/axios.js";
 
 export default {
   name: 'MainPage',
+  components: {},
   data() {
     return {
       titleKeyword: '',

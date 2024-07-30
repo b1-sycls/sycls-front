@@ -16,6 +16,26 @@ const routes = [
         name: 'Seat',
         component: () => import('@/components/seat/Seat.vue')
     },
+    {
+        path: '/payment/checkout',
+        name: 'CheckOut',
+        component: () => import('@/components/payment/Checkout.vue')
+    },
+    {
+        path: '/payment/success',
+        name: 'Success',
+        component: () => import('@/components/payment/Success.vue')
+    },
+    {
+        path: '/payment/fail',
+        name: 'Fail',
+        component: () => import('@/components/payment/Fail.vue')
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/components/auth/Login.vue')
+    },
 ];
 
 export const router = createRouter({
