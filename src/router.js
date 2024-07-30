@@ -7,9 +7,9 @@ const routes = [
         component: () => import('@/components/MainPage.vue')
     },
     {
-        path: '/department/:id',
-        // name: 'DepartmentInfo',
-        // component: () => import('@/components/department/DepartmentInfo')
+        path: '/seat/select',
+        name: 'Seat',
+        component: () => import('@/components/seat/Seat.vue')
     },
 ];
 
