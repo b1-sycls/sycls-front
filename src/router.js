@@ -21,6 +21,11 @@ const routes = [
         name: 'Fail',
         component: () => import('@/components/payment/Fail.vue')
     },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/components/Login.vue')
+    },
 ];
 
 export const router = createRouter({
