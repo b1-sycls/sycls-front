@@ -17,16 +17,14 @@
 </template>
 
 <script>
-import axiosInstance from "@/axios.js";  // 적절히 구성된 Axios 인스턴스를 가져옵니다
-
-import axios from 'axios';
+import axiosInstance from "@/axios.js";
 
 export default {
   name: 'Login',
   data() {
     return {
-      email: 'test1@gmail.com',
-      password: 'p@ssW0rd@'
+      email: '',
+      password: ''
     };
   },
   methods: {
@@ -34,36 +32,24 @@ export default {
       event.preventDefault(); // 기본 폼 제출 동작 방지
 
       try {
-        // Axios 요청
-        const response = await axios.post('http://localhost:8080/v1/auth/login', {
+        const response = await axiosInstance.post('/v1/auth/login', {
           email: this.email,
           password: this.password
         });
 
-        // 응답 헤더에서 Authorization 헤더 조회
-        const authHeader = response.headers['Authorization']; // 헤더 이름을 소문자로 접근
-        console.log(authHeader)
-
-        if (authHeader) {
-          // 로컬 저장소에 저장
-          localStorage.setItem('Authorization', authHeader);
-
-          // 로그인 성공 후 CheckOut 페이지로 이동
-          this.goToCheckOut();
+        if (response.status === 200) {
+          console.log('Login successful');
+          // 응답 데이터에서 토큰을 조회하여 로컬 저장소에 저장 (axios 인터셉터에서 자동으로 처리됨)
+          location.href = '/';
         } else {
-          console.error('Authorization header not found in response');
+          console.error('Login failed');
         }
       } catch (error) {
-        console.error('Login failed', error);
-        // 여기서 에러 처리 로직을 추가할 수 있습니다
+        console.error('Error during login:', error);
       }
-    },
-
-    goToCheckOut() {
-      this.$router.push({name: 'CheckOut'});
     }
   }
 };
 </script>
 
-<style src="../assets/css/login.css"></style>
+<style src="../../assets/css/login.css"></style>

@@ -12,6 +12,11 @@ const routes = [
         component: () => import('@/components/signup/Signup.vue')
     },
     {
+        path: '/seat/select',
+        name: 'Seat',
+        component: () => import('@/components/seat/Seat.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')

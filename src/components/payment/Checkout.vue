@@ -26,6 +26,9 @@
         <div class="ticket-price">가격: {{ ticketPrice }} / 1매</div>
         <div class="ticket-quantity">수량: {{ ticketQuantity }}매</div>
         <div class="ticket-seat">좌석 정보: {{ seatInfo }}</div>
+        <div class="seat-info">
+          TossPay와 카카오페이로 결제 부탁드립니다.
+        </div>
       </div>
 
       <div class="total-price">총 결제 금액: ₩{{ totalPrice }}</div>
@@ -53,8 +56,8 @@ export default {
   data() {
     return {
       contentId: '1',
-      contentTitle: 'title1',
-      description: '공연설명1',
+      contentTitle: 'title22',
+      description: '공연설명2',
       location: '공연장소',
       roundId: '1',
       sequence: '1',
@@ -66,19 +69,11 @@ export default {
   },
   methods: {
     async fetchClientKey() {
-      const response = (await axiosInstance.post('/v1/payment/client-key')).data;
+      const response = (await axiosInstance.post('/v1/payment/client-key', null, {})).data;
       return response.data.clientKey;
     },
     async fetchConcertAndRound() {
-      const response = (await axiosInstance.get('/v1/rounds/1', {
-        headers: {
-          "Content-Type": "application/json",
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJleHAiOjE3MjIyNjU5MzQsImlhdCI6MTcyMjI2MjMzNH0.MWlNqgAYvkvSfXRaoIi8uPyAMLnZKl17NraPQQWJa8k'
-        }
-      })).data.data;
-
-      console.log("asdfsadfasfasfas")
-      console.log(response)
+      const response = (await axiosInstance.get('/v1/rounds/1', {})).data.data;
 
       // 데이터 업데이트
       this.contentId = response.contentId;
