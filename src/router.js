@@ -7,6 +7,11 @@ const routes = [
         component: () => import('@/components/MainPage.vue')
     },
     {
+        path: '/signup',
+        name: 'Signup',
+        component: () => import('@/components/signup/Signup.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')
