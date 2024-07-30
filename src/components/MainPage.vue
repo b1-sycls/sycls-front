@@ -1,5 +1,6 @@
 <template>
-  <p>하윙fffffff</p>
+  <p>Main 페이지입니다.</p>
+  <button @click="goToAbout">공연 페이지</button>
 </template>
 
 
@@ -8,8 +9,14 @@ import axios from "axios";
 
 export default {
   name: 'MainPage',
-  methods: {},
+  methods: {
+    goToAbout() {
+      this.$router.push({name: 'Content'});
+      // window.location.href = '/checkout';
+    }
+  },
   components: {},
+
   data() {
     return {}
   },

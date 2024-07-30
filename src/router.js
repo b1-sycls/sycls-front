@@ -7,10 +7,10 @@ const routes = [
         component: () => import('@/components/MainPage.vue')
     },
     {
-        path: '/department/:id',
-        // name: 'DepartmentInfo',
-        // component: () => import('@/components/department/DepartmentInfo')
-    },
+        path: '/Content/content',
+        name: 'Content',
+        component: () => import('@/components/content/Content.vue')
+    }
 ];
 
 export const router = createRouter({
