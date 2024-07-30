@@ -1,45 +1,5 @@
 <template>
-  <div>
-    <header>
-      <div class="logo">서윤조이스</div>
-      <div class="user-actions">
-        <router-link to="/signup">회원가입</router-link>
-        <router-link to="/login">로그인</router-link>
-      </div>
-    </header>
-    <nav>
-      <div class="nav-controls">
-        <div class="categories-dropdown">
-          <select v-model="selectedCategory">
-            <option value="전체">전체</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-        <div class="search-bar">
-          <input type="text" v-model="titleKeyword" placeholder="검색할 콘서트 이름" />
-          <button @click="search">검색</button>
-        </div>
-      </div>
-    </nav>
-    <main>
-      <h2>콘서트 목록</h2>
-      <div class="concert-list">
-        <div v-for="concert in concerts" :key="concert.contentId" class="concert-item">
-          <img :src="concert.mainImagePath" :alt="concert.title" width="220" height="300" />
-          <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
-          <h3>{{ concert.title }}</h3>
-          <p>설명: {{ concert.description }}</p>
-          <p>카테고리: {{ concert.categoryName }}</p>
-          <button class="book-button" @click="bookTicket(concert)">상세 조회</button>
-        </div>
-      </div>
-      <div class="pagination">
-        <button v-for="page in totalPagesArray" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-      </div>
-    </main>
-  </div>
+  <p>하윙fffffff</p>
 </template>
 
 <script>
@@ -112,4 +72,9 @@ export default {
 };
 </script>
 
-<style src="../assets/css/content.css"></style>
+<style>
+.imageSize {
+  height: 1000px;
+  width: 1800px;
+}
+</style>
