@@ -32,7 +32,7 @@
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
           <p>카테고리: {{ concert.categoryName }}</p>
-          <button class="book-button" @click="bookTicket(concert)">예매 하기</button>
+          <button class="book-button" @click="bookTicket(concert)">상세 조회</button>
         </div>
       </div>
       <div class="pagination">
