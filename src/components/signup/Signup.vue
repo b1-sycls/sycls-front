@@ -34,10 +34,10 @@
 </template>
 
 <script>
-import '/src/assets/css/signup.css'
 import axiosInstance from "@/axios.js";
 
 export default {
+  name: 'Signup',
   data() {
     return {
       email: '',
@@ -99,3 +99,5 @@ export default {
   }
 };
 </script>
+
+<style src="../../assets/css/signup.css"></style>
