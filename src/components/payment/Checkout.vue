@@ -60,6 +60,8 @@ export default {
         return response.data.data.clientKey;
       } catch (error) {
         console.error("클라이언트 키를 가져오는 데 실패했습니다:", error);
+        alert("클라이언트 키를 가져오는 데 실패했습니다");
+        location.href = "/";
         throw error;
       }
     },
@@ -85,6 +87,13 @@ export default {
       try {
         const response = await axiosInstance.get('/v1/reservations/reserve/detail');
         this.seatInfos = response.data.data.seatInfos;
+
+        if (!this.seatInfos || this.seatInfos.length === 0) {
+          console.log("예약 정보가 없습니다.");
+          alert("예약 정보가 없습니다.");
+          location.href = "/";
+        }
+
         // 총 결제 금액 계산
         this.totalPrice = this.seatInfos.reduce((total, seat) => total + (seat.price * seat.quantity), 0);
       } catch (error) {
@@ -92,8 +101,9 @@ export default {
       }
     },
     async main() {
-      await this.fetchConcertAndRound();
+      const clientKey = await this.fetchClientKey();
       await this.fetchReservationInfo();
+      await this.fetchConcertAndRound();
 
       const button = document.getElementById("payment-button");
       const amount = {
@@ -101,7 +111,6 @@ export default {
         value: this.totalPrice,
       };
 
-      const clientKey = await this.fetchClientKey();
       const customerKey = this.generateRandomString();
       const tossPayments = TossPayments(clientKey);
 
