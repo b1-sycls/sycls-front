@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import axiosInstance from "@/axios.js";
+import {axiosInstance} from "@/axios.js";
 
 export default {
   name: 'MainPage',
