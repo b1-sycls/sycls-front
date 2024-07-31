@@ -36,6 +36,11 @@ const routes = [
         name: 'Login',
         component: () => import('@/components/auth/Login.vue')
     },
+    {
+        path: '/place/placeManage',
+        name: 'PlaceManage',
+        component: () => import('@/components/place/PlaceManage.vue')
+    }
 ];
 
 export const router = createRouter({

@@ -8,8 +8,11 @@ const axiosInstance = axios.create({
     }
 });
 
-export const axiosAdminInstance = axios.create({
-    baseURL: 'http://localhost:8081', // 관리자용 기본 URL 설정
+const axiosAdminInstance = axios.create({
+  baseURL: 'http://localhost:8081', // 관리자용 기본 URL 설정
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
 // 요청 인터셉터: 모든 요청에 토큰을 자동으로 추가합니다.
@@ -23,6 +26,20 @@ axiosInstance.interceptors.request.use(
     },
     (error) => {
         return Promise.reject(error);
+    }
+);
+
+// 요청 인터셉터: 모든 요청에 토큰을 자동으로 추가합니다.
+axiosAdminInstance.interceptors.request.use(
+    (config) => {
+      const accessToken = localStorage.getItem('Authorization');
+      if (accessToken) {
+        config.headers['Authorization'] = `${accessToken}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
 );
 
@@ -49,4 +66,4 @@ axiosInstance.interceptors.response.use(
 );
 
 
-export default axiosInstance;
+export {axiosInstance, axiosAdminInstance};
