@@ -1,124 +1,104 @@
 <template>
-  <div class="container">
-    <h1>{{ concert.title }}</h1>
-    <div class="concert-info">
-      <img :src="concert.mainImage" :alt="concert.title + ' 메인 이미지'" class="main-image" width="600" height="400">
-
-      <div class="custom-slider">
-        <button @click="prevSlide" class="slider-button prev-button">&#10094;</button>
-        <div class="slider-images">
-          <img v-for="(image, index) in concert.subImages"
-               :key="index"
-               :src="image"
-               :alt="concert.title + ' 서브 이미지 ' + (index + 1)"
-               class="slider-image"
-               :class="{ active: currentIndex === index }">
-        </div>
-        <button @click="nextSlide" class="slider-button next-button">&#10095;</button>
+  <div class="signup-container">
+    <h1>공연장 티케팅 회원가입</h1>
+    <form @submit.prevent="submitForm">
+      <div class="email-container">
+        <input type="email" v-model="email" placeholder="이메일" required>
+        <button type="button" @click="sendEmailVerification">인증</button>
       </div>
 
-      <p>{{ concert.description }}</p>
-      <p><strong>장소:</strong> {{ concert.venue }}</p>
-      <p><strong>기간:</strong> {{ concert.date }}</p>
-    </div>
-    <h2>공연 회차</h2>
-    <div class="shows">
-      <div v-for="show in concert.shows" :key="show.id"
-           class="show"
-           :class="{ selected: selectedShow === show }"
-           @click="selectShow(show)">
-        <h3>{{ show.date }} {{ show.time }}</h3>
-        <div class="performers">
-          <strong>출연진:</strong>
-          <ul>
-            <li v-for="performer in show.performers" :key="performer.name">
-              <img :src="performer.image" :alt="performer.name" class="performer-image">
-              {{ performer.name }}
-            </li>
-          </ul>
-        </div>
+      <div v-if="emailCodeVisible">
+        <label for="email-code">이메일 인증 코드</label>
+        <input type="text" v-model="emailCode">
       </div>
-    </div>
-    <button class="book-button"
-            @click="bookTicket"
-            :disabled="!selectedShow">
-      예매하러 가기
-    </button>
+
+      <label for="username">사용자 이름</label>
+      <input type="text" v-model="username" required>
+
+      <label for="nickname">닉네임</label>
+      <input type="text" v-model="nickname" required>
+
+      <label for="phone">전화번호</label>
+      <input type="tel" v-model="phone" required>
+
+      <label for="password">비밀번호</label>
+      <input type="password" v-model="password" required>
+
+      <label for="confirm-password">비밀번호 확인</label>
+      <input type="password" v-model="confirmPassword" required>
+
+      <button type="submit">가입하기</button>
+    </form>
+    <button class="main-button" @click="goToMain">메인 화면으로</button>
   </div>
 </template>
 
 <script>
+import {axiosInstance} from "@/axios.js";
+
 export default {
+  name: 'Signup',
   data() {
     return {
-      concert: {
-        id: 1,
-        title: "K-POP 드림 콘서트 2023",
-        mainImage: "https://concerttickets.com/images/kpop-dream-concert-2023-main.jpg",
-        subImages: [
-          "https://concerttickets.com/images/kpop-dream-concert-2023-sub1.jpg",
-          "https://concerttickets.com/images/kpop-dream-concert-2023-sub2.jpg",
-          "https://concerttickets.com/images/kpop-dream-concert-2023-sub3.jpg",
-        ],
-        description: "2023년 최고의 K-POP 아티스트들이 한자리에 모이는 드림 콘서트! 화려한 퍼포먼스와 감동적인 무대로 여러분을 찾아갑니다.",
-        venue: "고척스카이돔",
-        date: "2023년 8월 15일 - 2023년 8월 17일",
-        shows: [
-          {
-            id: 1,
-            date: "2023년 8월 15일",
-            time: "오후 6시",
-            performers: [
-              { name: "BTS", image: "https://example.com/images/bts.jpg" },
-              { name: "BLACKPINK", image: "https://example.com/images/blackpink.jpg" },
-              { name: "EXO", image: "https://example.com/images/exo.jpg" }
-            ]
-          },
-          {
-            id: 2,
-            date: "2023년 8월 16일",
-            time: "오후 6시",
-            performers: [
-              { name: "TWICE", image: "https://example.com/images/twice.jpg" },
-              { name: "NCT", image: "https://example.com/images/nct.jpg" },
-              { name: "Red Velvet", image: "https://example.com/images/redvelvet.jpg" }
-            ]
-          },
-          {
-            id: 3,
-            date: "2023년 8월 17일",
-            time: "오후 5시",
-            performers: [
-              { name: "IVE", image: "https://example.com/images/ive.jpg" },
-              { name: "SEVENTEEN", image: "https://example.com/images/seventeen.jpg" },
-              { name: "ITZY", image: "https://example.com/images/itzy.jpg" }
-            ]
-          }
-        ]
-      },
-      selectedShow: null,
-      currentIndex: 0
+      email: '',
+      emailCode: '',
+      emailCodeVisible: false,
+      username: '',
+      nickname: '',
+      phone: '',
+      password: '',
+      confirmPassword: ''
     };
   },
   methods: {
-    selectShow(show) {
-      this.selectedShow = show;
-    },
-    bookTicket() {
-      if (this.selectedShow) {
-        window.location.href = `/book/${this.concert.id}/${this.selectedShow.id}`;
+    sendEmailVerification() {
+      if (this.email.trim() === '') {
+        alert('이메일을 입력해주세요.');
+        return;
       }
+
+      axiosInstance.post('/v1/auth/send-verification-code', { email: this.email })
+      .then(response => {
+        this.emailCodeVisible = true;
+        alert(response.data.message);
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error.response?.data?.message || '인증 코드 전송에 실패했습니다.');
+      });
     },
-    prevSlide() {
-      this.currentIndex = (this.currentIndex === 0) ? this.concert.subImages.length - 1
-          : this.currentIndex - 1;
+    submitForm() {
+      if (this.password !== this.confirmPassword) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
+
+      const signupData = {
+        email: this.email,
+        username: this.username,
+        nickname: this.nickname,
+        phoneNumber: this.phone,
+        password: this.password,
+        code: this.emailCode
+      };
+
+      axiosInstance.post('/v1/users/signup', signupData)
+      .then(response => {
+        alert(response.data.message);
+        // 회원가입 완료 후 로그인 페이지로 이동
+        // window.location.href = '/login';
+        this.$router.push({name: 'Login'});
+      })
+      .catch(error => {
+        console.error(error);
+        alert(error.response?.data?.message || '회원가입에 실패했습니다.');
+      });
     },
-    nextSlide() {
-      this.currentIndex = (this.currentIndex === this.concert.subImages.length - 1) ? 0
-          : this.currentIndex + 1;
+    goToMain() {
+      this.$router.push({name: 'MainPage'});
     }
   }
 };
 </script>
 
-<style src="../../assets/css/concert.css"></style>
+<style src="../../assets/css/signup.css"></style>
