@@ -23,8 +23,8 @@ export default {
   name: 'Login',
   data() {
     return {
-      email: 'test1@gmail.com',
-      password: 'p@ssW0rd@'
+      email: '',
+      password: ''
     };
   },
   methods: {
@@ -49,7 +49,7 @@ export default {
         }
       } catch (error) {
         console.error('Login failed', error);
-
+        alert(error.response?.data?.message || '로그인에 실패했습니다.');
       }
     },
     goToCheckOut() {

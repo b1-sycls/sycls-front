@@ -22,14 +22,20 @@ header {
   display: flex;
   gap: 1rem;
 }
-.user-actions a {
+.user-actions a,
+.user-actions button {
   color: white;
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   transition: background-color 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
 }
-.user-actions a:hover {
+.user-actions a:hover,
+.user-actions button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 nav {
@@ -38,7 +44,7 @@ nav {
 }
 .nav-controls {
   display: flex;
-  justify-content: space-between; /* 변경: 좌우 배치 */
+  justify-content: space-between;
   align-items: center;
   gap: 1rem;
   max-width: 600px;
@@ -52,7 +58,7 @@ nav {
 }
 .search-bar {
   display: flex;
-  width: 500px; /* 검색창 너비 조정 */
+  width: 500px;
 }
 .search-bar input {
   flex-grow: 1;
@@ -105,26 +111,6 @@ main {
   border-radius: 20px;
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
-}
-.rock {
-  background-color: #FF4136;
-  color: white;
-}
-.pop {
-  background-color: #FF851B;
-  color: white;
-}
-.kpop {
-  background-color: #2ECC40;
-  color: white;
-}
-.classic {
-  background-color: #0074D9;
-  color: white;
-}
-.jazz {
-  background-color: #B10DC9;
-  color: white;
 }
 .book-button {
   background-color: #4A148C;
