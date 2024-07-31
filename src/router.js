@@ -40,6 +40,11 @@ const routes = [
         path: '/concert/:id',
         name: 'Concert',
         component: () => import('@/components/round/Concert.vue')
+    },
+    {
+        path: '/place/placeManage',
+        name: 'PlaceManage',
+        component: () => import('@/components/place/PlaceManage.vue')
     }
 ];
 

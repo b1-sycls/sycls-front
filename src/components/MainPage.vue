@@ -3,6 +3,7 @@
     <header>
       <div class="logo">에티켓(everyTicket)</div>
       <div class="user-actions">
+        <router-link to="/place/placeManage">공연관리</router-link>
         <router-link v-if="!isLoggedIn" to="/login">로그인</router-link>
         <router-link v-if="!isLoggedIn" to="/signup">회원가입</router-link>
         <button v-if="isLoggedIn" class="styled-button" @click="logout">로그아웃</button>
@@ -43,7 +44,6 @@
     </main>
   </div>
 </template>
-
 <script>
 import {axiosInstance} from "@/axios.js";
 
@@ -62,7 +62,7 @@ export default {
   },
   computed: {
     totalPagesArray() {
-      return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+      return Array.from({length: this.totalPages}, (_, i) => i + 1);
     }
   },
   methods: {
