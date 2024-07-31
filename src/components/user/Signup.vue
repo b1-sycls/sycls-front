@@ -86,7 +86,8 @@ export default {
       .then(response => {
         alert(response.data.message);
         // 회원가입 완료 후 로그인 페이지로 이동
-        window.location.href = '/login.html';
+        // window.location.href = '/login';
+        this.$router.push({name: 'Login'});
       })
       .catch(error => {
         console.error(error);
@@ -94,7 +95,7 @@ export default {
       });
     },
     goToMain() {
-      window.location.href = '/';
+      this.$router.push({name: 'MainPage'});
     }
   }
 };

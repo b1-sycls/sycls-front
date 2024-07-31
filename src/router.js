@@ -9,7 +9,7 @@ const routes = [
     {
         path: '/signup',
         name: 'Signup',
-        component: () => import('@/components/signup/Signup.vue')
+        component: () => import('@/components/user/Signup.vue')
     },
     {
         path: '/seat/select',
@@ -35,6 +35,11 @@ const routes = [
         path: '/login',
         name: 'Login',
         component: () => import('@/components/auth/Login.vue')
+    },
+    {
+        path: '/concert/:id',
+        name: 'Concert',
+        component: () => import('@/components/round/Concert.vue')
     },
     {
         path: '/place/placeManage',

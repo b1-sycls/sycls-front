@@ -65,5 +65,26 @@ axiosInstance.interceptors.response.use(
     }
 );
 
+axiosAdminInstance.interceptors.response.use(
+    (response) => {
+        const accessToken = response.headers['authorization'];
+        const refreshToken = response.headers['refreshtoken'];
+        if (accessToken) {
+            localStorage.setItem('Authorization', accessToken);
+        }
+        if (refreshToken) {
+            localStorage.setItem('RefreshToken', refreshToken);
+        }
+        return response;
+    },
+    (error) => {
+        // 예: 토큰 만료 시 refresh token으로 새로운 access token을 얻기
+        if (error.response && error.response.status === 401) {
+            // refresh token으로 새로운 access token을 얻는 로직을 추가할 수 있습니다.
+        }
+        return Promise.reject(error);
+    }
+);
+
 
 export {axiosInstance, axiosAdminInstance};

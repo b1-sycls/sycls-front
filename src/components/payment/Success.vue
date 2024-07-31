@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="box_section" style="width: 600px">
     <img width="100px" src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png"/>
     <h2>결제를 완료했어요</h2>
@@ -27,14 +27,31 @@
     <b>Response Data :</b>
     <div id="response" style="white-space: initial"></div>
   </div>
+
+  <h1> ai</h1>
+
+  <div class="ticket-info">
+    <p><strong>공연명:</strong> title1</p>
+    <p><strong>장소:</strong> locationPlace1</p>
+    <p><strong>일시:</strong> 2024-07-31 14:23:22</p>
+    <p><strong>선택 좌석:</strong> A_GRADE (A1), VIP (A3, A4)</p>
+  </div>
+
+  <div class="total">
+    총 결제 금액: 25,000원
+  </div>
+  <div class="buttons">
+    <router-link class="button" to="/">홈으로</router-link>
+    <!--    <router-link class="button" to="/">내 티켓 보기</router-link>-->
+  </div>
 </template>
 
 
 <script>
-import axios from "axios";
+import {axiosInstance} from "@/axios.js";
 
 export default {
-  name: 'Sucess',
+  name: 'Success',
   data() {
     return {
       paymentKey: '',
@@ -65,15 +82,13 @@ export default {
         amount: urlParams.get("amount"),
       };
 
-      const response = await fetch("/v1/payment/confirm", {
+      const response = await axiosInstance.post("/v1/payment/confirm", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(requestData),
       });
 
-      const json = await response.json();
+      console.log(response);
+      // const json = await response.json();
 
       if (!response.ok) {
         // TODO: 결제 실패 비즈니스 로직을 구현하세요.
@@ -89,4 +104,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/payment.css"></style>
+<style src="../../assets/css/success.css"></style>
