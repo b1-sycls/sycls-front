@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <div class="logo">서윤조이스</div>
+      <div class="logo">에티켓(everyTicket)</div>
       <div class="user-actions">
         <router-link v-if="!isLoggedIn" to="/login">로그인</router-link>
         <router-link v-if="!isLoggedIn" to="/signup">회원가입</router-link>
@@ -29,12 +29,12 @@
       <h2>콘서트 목록</h2>
       <div class="concert-list">
         <div v-for="concert in concerts" :key="concert.contentId" class="concert-item">
-          <img :src="concert.mainImagePath" :alt="concert.title" width="220" height="300" />
+          <img :src="concert.mainImagePath" :alt="concert.title" class="concert-image" />
           <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
           <p>카테고리: {{ concert.categoryName }}</p>
-          <button class="book-button" @click="bookTicket(concert)">상세 조회</button>
+          <button class="book-button" @click="viewConcert(concert)">상세 조회</button>
         </div>
       </div>
       <div class="pagination">
@@ -66,8 +66,8 @@ export default {
     }
   },
   methods: {
-    bookTicket(concert) {
-      alert(`${concert.title} 예매를 하기위한 공연 상세 페이지로 이동(업데이트예정)`);
+    viewConcert(concert) {
+      this.$router.push({ name: 'Concert', params: { id: concert.contentId } });
     },
     changePage(pageNumber) {
       this.currentPage = pageNumber;
@@ -135,5 +135,5 @@ export default {
   }
 };
 </script>
-<!--프론트 CSS 가 충돌? 겹침? 문제 뒤로가기나 html 이동시 css 가 이전게 적용됨-->
-<style src="@/assets/css/content.css"></style>
+
+<style src="@/assets/css/main.css"></style>

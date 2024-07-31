@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import axiosInstance from "@/axios.js";
+import {axiosInstance} from "@/axios.js";
 
 export default {
   name: 'Seat',
@@ -159,6 +159,7 @@ export default {
     confirmSelection() {
       if (this.selectedSeats.length > 0) {
         alert(`선택된 좌석: ${this.selectedSeats.join(', ')}\n예매를 진행합니다.`);
+        this.$router.push({name: 'CheckOut'});
       } else {
         alert('좌석을 선택해주세요.');
       }
