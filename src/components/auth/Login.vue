@@ -17,36 +17,43 @@
 </template>
 
 <script>
-import axiosInstance from "@/axios.js";
+ import {axiosInstance} from "@/axios.js";
 
 export default {
   name: 'Login',
   data() {
     return {
-      email: '',
-      password: ''
+      email: 'test1@gmail.com',
+      password: 'p@ssW0rd@'
     };
   },
   methods: {
     async handleSubmit(event) {
       event.preventDefault(); // 기본 폼 제출 동작 방지
-
       try {
+        // Axios 요청
         const response = await axiosInstance.post('/v1/auth/login', {
           email: this.email,
           password: this.password
         });
+        const accessToken = response.headers['authorization']; // 헤더 이름을 소문자로 접근
+        const refreshToken = response.headers['refreshtoken']; // 헤더 이름을 소문자로 접근
 
-        if (response.status === 200) {
-          console.log('Login successful');
-          // 응답 데이터에서 토큰을 조회하여 로컬 저장소에 저장 (axios 인터셉터에서 자동으로 처리됨)
-          location.href = '/';
+        if (accessToken) {
+          localStorage.setItem('Authorization', accessToken);
+          localStorage.setItem('RefreshToken', refreshToken);
+
+          this.goToCheckOut();
         } else {
-          console.error('Login failed');
+          console.error('Authorization header not found in response');
         }
       } catch (error) {
-        console.error('Error during login:', error);
+        console.error('Login failed', error);
+
       }
+    },
+    goToCheckOut() {
+      this.$router.push({name: 'MainPage'});
     }
   }
 };
