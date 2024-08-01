@@ -45,6 +45,11 @@ const routes = [
         path: '/place/placeManage',
         name: 'PlaceManage',
         component: () => import('@/components/place/PlaceManage.vue')
+    },
+    {
+        path: '/manage',
+        name: 'ManageMainPage',
+        component: () => import('@/components/ManageMainPage.vue')
     }
 ];
 
