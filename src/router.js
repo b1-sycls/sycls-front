@@ -56,6 +56,11 @@ const routes = [
         name: 'ManageSignup',
         component: () => import('@/components/user/ManageSignup.vue')
     },
+    {
+        path: '/manage/login',
+        name: 'ManageLogin',
+        component: () => import('@/components/auth/ManageLogin.vue')
+    },
 ];
 
 export const router = createRouter({

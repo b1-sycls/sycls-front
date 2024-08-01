@@ -4,9 +4,34 @@
     <form @submit.prevent="submitForm">
       <label for="email">이메일</label>
       <div class="email-container">
-        <input type="email" v-model="email" placeholder="이메일을 입력하세요" required>
-        <button type="button" @click="checkEmailDuplication">중복 확인</button>
-        <button type="button" @click="sendEmailVerification">인증</button>
+        <input
+            type="email"
+            v-model="email"
+            placeholder="이메일을 입력하세요"
+            :disabled="isEmailChecked || isVerificationSent"
+            @input="resetEmailCheck"
+            required
+        >
+        <button
+            type="button"
+            v-if="isEmailChecked"
+            @click="resetEmailCheck"
+            :disabled="isVerificationSent"
+            :class="{ 'disabled-button': isVerificationSent }"
+        >재설정</button>
+        <button
+            type="button"
+            v-else
+            @click="checkEmailDuplication"
+        >중복 확인</button>
+        <button
+            type="button"
+            @click="sendEmailVerification"
+            :disabled="!isEmailChecked || isVerificationSent"
+            :class="{
+            'disabled-button': !isEmailChecked || isVerificationSent
+          }"
+        >인증</button>
       </div>
 
       <div v-if="emailCodeVisible">
@@ -35,6 +60,7 @@
       <button type="submit">가입하기</button>
     </form>
     <button class="main-button" @click="goToMain">메인 화면으로</button>
+    <button class="secondary-button" @click="goToLogin">로그인 화면으로</button>
   </div>
 </template>
 
@@ -52,7 +78,9 @@ export default {
       nickname: '',
       phone: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      isEmailChecked: false, // 이메일 중복 확인 상태
+      isVerificationSent: false // 인증 요청 상태
     };
   },
   methods: {
@@ -67,13 +95,16 @@ export default {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
           alert('이메일이 이미 사용 중입니다.');
+          this.isEmailChecked = false;
         } else {
           alert('이메일을 사용할 수 있습니다.');
+          this.isEmailChecked = true;
         }
       })
       .catch(error => {
         console.error(error);
         alert(error.response?.data?.message || '이메일 중복 확인에 실패했습니다.');
+        this.isEmailChecked = false;
       });
     },
     sendEmailVerification() {
@@ -82,9 +113,10 @@ export default {
         return;
       }
 
-      axiosInstance.post('/v1/auth/send-verification-code', {email: this.email})
+      axiosInstance.post('/v1/auth/send-verification-code', { email: this.email })
       .then(response => {
         this.emailCodeVisible = true;
+        this.isVerificationSent = true;
         alert(response.data.message);
       })
       .catch(error => {
@@ -98,7 +130,7 @@ export default {
         return;
       }
 
-      axiosInstance.get('/v1/nickname/check', {params: {nickname: this.nickname}})
+      axiosInstance.get('/v1/nickname/check', { params: { nickname: this.nickname } })
       .then(response => {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
@@ -131,15 +163,24 @@ export default {
       .then(response => {
         alert(response.data.message);
         // 회원가입 완료 후 로그인 페이지로 이동
-        this.$router.push({name: 'Login'});
+        this.$router.push({ name: 'Login' });
       })
       .catch(error => {
         console.error(error);
         alert(error.response?.data?.message || '회원가입에 실패했습니다.');
       });
     },
+    resetEmailCheck() {
+      this.isEmailChecked = false;
+      this.isVerificationSent = false;
+      this.emailCodeVisible = false;
+      this.emailCode = '';
+    },
     goToMain() {
       this.$router.push({name: 'MainPage'});
+    },
+    goToLogin() {
+      this.$router.push({name: 'Login'});
     }
   }
 };
