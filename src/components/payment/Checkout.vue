@@ -5,7 +5,7 @@
       <div class="event">
         <p><strong>공연명:</strong> {{ contentTitle }}</p>
         <p><strong>장소:</strong> {{ location }}</p>
-        <p><strong>일시:</strong> {{ startDate }} {{ startTime }}</p>
+        <p><strong>일시:</strong> {{ startDate }} {{ startTime }} ~ {{ endTime }}</p>
         <p><strong>선택 좌석:</strong>
           <span v-for="(seatInfo, index) in seatInfos" :key="index">
             <template v-if="index > 0">, </template>
@@ -24,7 +24,7 @@
       <div id="agreement"></div>
       <!-- 결제하기 버튼 -->
       <div class="result wrapper">
-        <button class="button" id="payment-button" style="margin-top: 30px" @click="handlePayment">
+        <button class="button" id="payment-button" style="margin-top: 30px">
           결제하기
         </button>
       </div>
@@ -47,7 +47,6 @@ export default {
       startDate: '',
       startTime: '',
       endTime: '',
-      roundId: '',
       seatInfos: [],
       totalPrice: 0
     };
@@ -77,6 +76,17 @@ export default {
         this.startDate = data.startDate;
         this.startTime = data.startTime;
         this.endTime = data.endTime;
+
+        // sessionStorage에 데이터 저장
+        sessionStorage.setItem('contentData', JSON.stringify({
+          contentId: this.contentId,
+          contentTitle: this.contentTitle,
+          location: this.location,
+          startDate: this.startDate,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          seatInfos: this.seatInfos
+        }));
       } catch (error) {
         console.error("공연 및 회차 정보를 가져오는 데 실패했습니다:", error);
       }
@@ -129,8 +139,8 @@ export default {
         await widgets.requestPayment({
           orderId: this.generateRandomString(),
           orderName: "에티켓(EveryTicket)",
-          successUrl: window.location.origin + "/payment/success",
-          failUrl: window.location.origin + "/payment/fail",
+          successUrl: `${window.location.origin}/payment/success`,
+          failUrl: `${window.location.origin}/payment/fail`,
           customerEmail: userInfo.email,
           customerName: userInfo.username,
           customerMobilePhone: userInfo.phoneNumber,
