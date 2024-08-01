@@ -34,7 +34,7 @@
       </div>
 
       <div class="total">
-        총 결제 금액: {{ totalPrice }}원
+        총 결제 금액: {{ amount }}원
       </div>
 
       <div class="buttons">
