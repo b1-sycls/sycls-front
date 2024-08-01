@@ -21,7 +21,7 @@ body {
 h1 {
   text-align: center;
   color: #333;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 form {
@@ -30,8 +30,8 @@ form {
 }
 
 label {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
   color: #555;
 }
 
@@ -40,11 +40,12 @@ input {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 button {
-  margin-top: 1rem;
-  padding: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
   background-color: #4CAF50;
   color: white;
   border: none;
@@ -64,16 +65,20 @@ button:hover {
   margin-top: 0.25rem;
 }
 
-.email-container {
+.email-container,
+.nickname-container {
   display: flex;
-  gap: 10px;
+  gap: 5px;
+  margin-bottom: 0.5rem;
 }
 
-.email-container input {
+.email-container input,
+.nickname-container input {
   flex-grow: 1;
 }
 
-.email-container button {
+.email-container button,
+.nickname-container button {
   flex-shrink: 0;
 }
 
@@ -81,7 +86,6 @@ button:hover {
   display: none;
 }
 
-/* 메인창으로 가는 버튼을 페이지의 오른쪽 상단에 고정 */
 .main-button {
   position: fixed;
   top: 20px;

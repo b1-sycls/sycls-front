@@ -50,7 +50,12 @@ const routes = [
         path: '/manage',
         name: 'ManageMainPage',
         component: () => import('@/components/ManageMainPage.vue')
-    }
+    },
+    {
+        path: '/manage/signup',
+        name: 'ManageSignup',
+        component: () => import('@/components/user/ManageSignup.vue')
+    },
 ];
 
 export const router = createRouter({
