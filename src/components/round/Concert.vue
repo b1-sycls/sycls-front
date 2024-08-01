@@ -160,4 +160,4 @@ export default {
 
 
 
-<style src="../../assets/css/concert.css"></style>
+<style src="../../assets/css/concert.css" scoped></style>
