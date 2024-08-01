@@ -65,7 +65,9 @@ export default {
     },
     async fetchConcertAndRound() {
       try {
-        const response = await axiosInstance.get('/v1/rounds/1');
+        // TODO
+        const roundId = this.$route.query.roundId;
+        const response = await axiosInstance.get(`/v1/rounds/${roundId}`);
         const data = response.data.data;
 
         this.contentId = data.contentId;
