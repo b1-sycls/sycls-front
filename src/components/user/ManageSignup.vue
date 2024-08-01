@@ -1,5 +1,6 @@
 <template>
   <div class="signup-container">
+    <h2>매니저용</h2>
     <h1>공연장 티케팅 회원가입</h1>
     <form @submit.prevent="submitForm">
       <label for="email">이메일</label>
@@ -11,7 +12,7 @@
             :disabled="isEmailChecked || isVerificationSent"
             @input="resetEmailCheck"
             required
-        >
+        />
         <button
             type="button"
             v-if="isEmailChecked"
@@ -28,9 +29,7 @@
             type="button"
             @click="sendEmailVerification"
             :disabled="!isEmailChecked || isVerificationSent"
-            :class="{
-            'disabled-button': !isEmailChecked || isVerificationSent
-          }"
+            :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
         >인증</button>
       </div>
 
@@ -57,15 +56,17 @@
       <label for="confirm-password">비밀번호 확인</label>
       <input type="password" v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
 
+      <label for="admin-code">어드민 코드</label>
+      <input type="text" v-model="adminCode" placeholder="어드민 코드를 입력하세요" required>
+
       <button type="submit">가입하기</button>
     </form>
-    <button class="main-button" @click="goToMain">메인 화면으로</button>
-    <button class="secondary-button" @click="goToLogin">로그인 화면으로</button>
+    <button class="main-button" @click="goToLogin">로그인 화면으로</button>
   </div>
 </template>
 
 <script>
-import { axiosInstance } from "@/axios.js";
+import { axiosAdminInstance } from "@/axios.js";
 
 export default {
   name: 'Signup',
@@ -79,8 +80,9 @@ export default {
       phone: '',
       password: '',
       confirmPassword: '',
-      isEmailChecked: false, // 이메일 중복 확인 상태
-      isVerificationSent: false // 인증 요청 상태
+      adminCode: '',
+      isEmailChecked: false,
+      isVerificationSent: false
     };
   },
   methods: {
@@ -90,7 +92,7 @@ export default {
         return;
       }
 
-      axiosInstance.get('/v1/email/check', { params: { email: this.email } })
+      axiosAdminInstance.get('/v1/email/check', { params: { email: this.email } })
       .then(response => {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
@@ -113,7 +115,7 @@ export default {
         return;
       }
 
-      axiosInstance.post('/v1/auth/send-verification-code', { email: this.email })
+      axiosAdminInstance.post('/v1/auth/send-verification-code', { email: this.email })
       .then(response => {
         this.emailCodeVisible = true;
         this.isVerificationSent = true;
@@ -130,7 +132,7 @@ export default {
         return;
       }
 
-      axiosInstance.get('/v1/nickname/check', { params: { nickname: this.nickname } })
+      axiosAdminInstance.get('/v1/nickname/check', { params: { nickname: this.nickname } })
       .then(response => {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
@@ -156,14 +158,15 @@ export default {
         nickname: this.nickname,
         phoneNumber: this.phone,
         password: this.password,
-        code: this.emailCode
+        code: this.emailCode,
+        adminCode: this.adminCode
       };
 
-      axiosInstance.post('/v1/users/signup', signupData)
+      axiosAdminInstance.post('/v1/users/signup', signupData)
       .then(response => {
         alert(response.data.message);
         // 회원가입 완료 후 로그인 페이지로 이동
-        this.$router.push({ name: 'Login' });
+        this.$router.push({ name: 'ManageLogin' });
       })
       .catch(error => {
         console.error(error);
@@ -176,11 +179,8 @@ export default {
       this.emailCodeVisible = false;
       this.emailCode = '';
     },
-    goToMain() {
-      this.$router.push({name: 'MainPage'});
-    },
     goToLogin() {
-      this.$router.push({name: 'Login'});
+      this.$router.push({ name: 'ManageLogin' });
     }
   }
 };

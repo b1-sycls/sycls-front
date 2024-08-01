@@ -17,6 +17,11 @@ const routes = [
         component: () => import('@/components/seat/Seat.vue')
     },
     {
+        path: '/seat/manage',
+        name: 'SeatManage',
+        component: () => import('@/components/seat/SeatManage.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')
@@ -40,7 +45,27 @@ const routes = [
         path: '/concert/:id',
         name: 'Concert',
         component: () => import('@/components/round/Concert.vue')
-    }
+    },
+    {
+        path: '/place/placeManage',
+        name: 'PlaceManage',
+        component: () => import('@/components/place/PlaceManage.vue')
+    },
+    {
+        path: '/manage',
+        name: 'ManageMainPage',
+        component: () => import('@/components/ManageMainPage.vue')
+    },
+    {
+        path: '/manage/signup',
+        name: 'ManageSignup',
+        component: () => import('@/components/user/ManageSignup.vue')
+    },
+    {
+        path: '/manage/login',
+        name: 'ManageLogin',
+        component: () => import('@/components/auth/ManageLogin.vue')
+    },
 ];
 
 export const router = createRouter({

@@ -27,12 +27,6 @@ body {
   font-weight: bold;
 }
 
-.date-selector {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
 .seating-chart {
   border: 1px solid #ddd;
   padding: 20px;
@@ -102,16 +96,38 @@ body {
   margin-right: 5px;
 }
 
+#selectedSeats {
+  margin-top: 40px;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected-seats-info {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.selected-seats-info h3 {
+  margin: 0 0 10px 0;
+}
+
+.total-price {
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: right;
+}
+
 .button {
   background-color: #f0f0f0;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
-  position: absolute;
-  right: 20px;
-  bottom: 0;
-  margin-bottom: 20px;
+  margin-left: 20px;
 }
 
 .zoom-controls {
@@ -126,9 +142,4 @@ body {
   font-size: 18px;
   margin-left: 5px;
   cursor: pointer;
-}
-
-#selectedSeats {
-  margin-top: 40px;
-  font-weight: bold;
 }
