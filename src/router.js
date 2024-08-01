@@ -17,6 +17,11 @@ const routes = [
         component: () => import('@/components/seat/Seat.vue')
     },
     {
+        path: '/seat/manage',
+        name: 'SeatManage',
+        component: () => import('@/components/seat/SeatManage.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')

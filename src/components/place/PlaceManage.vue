@@ -69,7 +69,7 @@
           </div>
           <div class="button-group">
             <button type="submit" class="submit-button">{{ isEditing ? '수정' : '등록' }}</button>
-            <button type="button" class="seat-button" @click="editSeats(editingVenue.placeId)">좌석 수정</button>
+            <button type="button" class="seat-button" @click="editSeats(editingVenue.placeId, editingVenue.name, editingVenue.maxSeat)">좌석 수정</button>
           </div>
         </form>
       </div>
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
+import {axiosAdminInstance, axiosInstance} from "@/axios.js";
 
 export default {
   name: 'PlaceManage',
@@ -205,14 +205,21 @@ export default {
         }
       }
     },
-    logout() {
-      // 로그아웃 로직을 여기에 추가하세요
-      alert('로그아웃 되었습니다.');
-      this.$router.push('/'); // 로그아웃 후 로그인 페이지로 이동
+    async logout() {tr
+      try {
+        await axiosInstance.post('/v1/auth/logout');
+        localStorage.removeItem('Authorization');
+        localStorage.removeItem('RefreshToken');
+        this.$router.push({ name: 'MainPage' });
+        alert('로그아웃 하셨습니다.');
+      } catch (error) {
+        console.error('Logout failed', error);
+        alert('로그아웃에 실패했습니다.');
+      }
+    },
+    editSeats(placeId, name, maxSeat) {
+      this.$router.push({ name:'SeatManage', query: {placeId:placeId, placeName:name, maxSeat:maxSeat}});
     }
-  },
-  editSeats(placeId) {
-    this.$router.push({ name: 'SeatEdit', params: { placeId } });
   },
   created() {
     this.getVenues();
