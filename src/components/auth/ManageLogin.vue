@@ -111,7 +111,7 @@ export default {
       }
     },
     goToCheckOut() {
-      this.$router.push({name: 'ManageMain'});
+      this.$router.push({name: 'ManageMainPage'});
     },
     showFindIdModal() {
       this.showFindId = true;
@@ -180,4 +180,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/login.css"></style>
+<style src="../../assets/css/login.css" scoped></style>

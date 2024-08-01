@@ -1,72 +1,77 @@
 <template>
-  <div class="signup-container">
-    <h2>매니저용</h2>
-    <h1>공연장 티케팅 회원가입</h1>
-    <form @submit.prevent="submitForm">
-      <label for="email">이메일</label>
-      <div class="email-container">
-        <input
-            type="email"
-            v-model="email"
-            placeholder="이메일을 입력하세요"
-            :disabled="isEmailChecked || isVerificationSent"
-            @input="resetEmailCheck"
-            required
-        />
-        <button
-            type="button"
-            v-if="isEmailChecked"
-            @click="resetEmailCheck"
-            :disabled="isVerificationSent"
-            :class="{ 'disabled-button': isVerificationSent }"
-        >재설정</button>
-        <button
-            type="button"
-            v-else
-            @click="checkEmailDuplication"
-        >중복 확인</button>
-        <button
-            type="button"
-            @click="sendEmailVerification"
-            :disabled="!isEmailChecked || isVerificationSent"
-            :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
-        >인증</button>
-      </div>
+  <div class="container">
+    <div class="signup-container">
+      <h2>매니저용</h2>
+      <h1>공연장 티케팅 회원가입</h1>
+      <form @submit.prevent="submitForm">
+        <label for="email">이메일</label>
+        <div class="email-container">
+          <input
+              type="email"
+              v-model="email"
+              placeholder="이메일을 입력하세요"
+              :disabled="isEmailChecked || isVerificationSent"
+              @input="resetEmailCheck"
+              required
+          />
+          <button
+              type="button"
+              v-if="isEmailChecked"
+              @click="resetEmailCheck"
+              :disabled="isVerificationSent"
+              :class="{ 'disabled-button': isVerificationSent }"
+          >재설정
+          </button>
+          <button
+              type="button"
+              v-else
+              @click="checkEmailDuplication"
+          >중복 확인
+          </button>
+          <button
+              type="button"
+              @click="sendEmailVerification"
+              :disabled="!isEmailChecked || isVerificationSent"
+              :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
+          >인증
+          </button>
+        </div>
 
-      <div v-if="emailCodeVisible">
-        <label for="email-code">이메일 인증 코드</label>
-        <input type="text" v-model="emailCode" placeholder="인증 코드를 입력하세요">
-      </div>
+        <div v-if="emailCodeVisible">
+          <label for="email-code">이메일 인증 코드</label>
+          <input type="text" v-model="emailCode" placeholder="인증 코드를 입력하세요">
+        </div>
 
-      <label for="username">사용자 이름</label>
-      <input type="text" v-model="username" placeholder="사용자 이름을 입력하세요" required>
+        <label for="username">사용자 이름</label>
+        <input type="text" v-model="username" placeholder="사용자 이름을 입력하세요" required>
 
-      <label for="nickname">닉네임</label>
-      <div class="nickname-container">
-        <input type="text" v-model="nickname" placeholder="닉네임을 입력하세요" required>
-        <button type="button" @click="checkNicknameDuplication">중복 확인</button>
-      </div>
+        <label for="nickname">닉네임</label>
+        <div class="nickname-container">
+          <input type="text" v-model="nickname" placeholder="닉네임을 입력하세요" required>
+          <button type="button" @click="checkNicknameDuplication">중복 확인</button>
+        </div>
 
-      <label for="phone">전화번호</label>
-      <input type="tel" v-model="phone" placeholder="전화번호를 입력하세요" required>
+        <label for="phone">전화번호</label>
+        <input type="tel" v-model="phone" placeholder="전화번호를 입력하세요" required>
 
-      <label for="password">비밀번호</label>
-      <input type="password" v-model="password" placeholder="비밀번호를 입력하세요" required>
+        <label for="password">비밀번호</label>
+        <input type="password" v-model="password" placeholder="비밀번호를 입력하세요" required>
 
-      <label for="confirm-password">비밀번호 확인</label>
-      <input type="password" v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+        <label for="confirm-password">비밀번호 확인</label>
+        <input type="password" v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
 
-      <label for="admin-code">어드민 코드</label>
-      <input type="text" v-model="adminCode" placeholder="어드민 코드를 입력하세요" required>
+        <label for="admin-code">어드민 코드</label>
+        <input type="text" v-model="adminCode" placeholder="어드민 코드를 입력하세요" required>
 
-      <button type="submit">가입하기</button>
-    </form>
-    <button class="main-button" @click="goToLogin">로그인 화면으로</button>
+        <button type="submit">가입하기</button>
+      </form>
+      <button class="main-button" @click="goToLogin">로그인 화면으로</button>
+    </div>
   </div>
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 
 export default {
   name: 'Signup',
@@ -92,7 +97,7 @@ export default {
         return;
       }
 
-      axiosAdminInstance.get('/v1/email/check', { params: { email: this.email } })
+      axiosAdminInstance.get('/v1/email/check', {params: {email: this.email}})
       .then(response => {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
@@ -115,7 +120,7 @@ export default {
         return;
       }
 
-      axiosAdminInstance.post('/v1/auth/send-verification-code', { email: this.email })
+      axiosAdminInstance.post('/v1/auth/send-verification-code', {email: this.email})
       .then(response => {
         this.emailCodeVisible = true;
         this.isVerificationSent = true;
@@ -132,7 +137,7 @@ export default {
         return;
       }
 
-      axiosAdminInstance.get('/v1/nickname/check', { params: { nickname: this.nickname } })
+      axiosAdminInstance.get('/v1/nickname/check', {params: {nickname: this.nickname}})
       .then(response => {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
@@ -166,7 +171,7 @@ export default {
       .then(response => {
         alert(response.data.message);
         // 회원가입 완료 후 로그인 페이지로 이동
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       })
       .catch(error => {
         console.error(error);
@@ -180,10 +185,10 @@ export default {
       this.emailCode = '';
     },
     goToLogin() {
-      this.$router.push({ name: 'ManageLogin' });
+      this.$router.push({name: 'ManageLogin'});
     }
   }
 };
 </script>
 
-<style src="../../assets/css/signup.css"></style>
+<style src="../../assets/css/signup.css" scoped></style>

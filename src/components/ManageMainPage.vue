@@ -4,8 +4,10 @@
       <div class="logo">에티켓(everyTicket) 공연관리 페이지</div>
       <div class="user-actions">
         <router-link to="/member-manage" class="nav-button">회원관리</router-link>
+        <router-link to="/seat/manage" class="nav-button">좌석관리</router-link>
         <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
-        <router-link to="/category/placeManage" class="nav-button">카테고리관리</router-link>
+        <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
+        <!--TODO 나중에 로그인안되어있으면 로그인페이지로 튕기게하고 로그인과 회원가입 페이지는 삭제예정-->
         <router-link v-if="!isLoggedIn" to="/manage/login">로그인</router-link>
         <router-link v-if="!isLoggedIn" to="/manage/signup">회원가입</router-link>
         <button v-if="isLoggedIn" class="styled-button" @click="logout">로그아웃</button>
@@ -182,4 +184,4 @@ export default {
 };
 </script>
 
-<style src="@/assets/css/main.css"></style>
+<style src="@/assets/css/main.css" scoped></style>

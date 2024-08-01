@@ -104,4 +104,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/success.css"></style>
+<style src="../../assets/css/success.css" scoped></style>
