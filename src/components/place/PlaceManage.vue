@@ -1,8 +1,9 @@
 <template>
   <div class="nav-bar">
     <router-link to="/member-manage" class="nav-button">회원관리</router-link>
-    <router-link to="/place-manage" class="nav-button">공연장관리</router-link>
-    <router-link to="/performance-manage" class="nav-button">공연관리</router-link>
+    <router-link to="/seat/manage" class="nav-button">좌석관리</router-link>
+    <router-link to="/manage" class="nav-button">공연관리</router-link>
+    <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
     <button @click="logout" class="nav-button">로그아웃</button>
   </div>
   <div id="app" class="container">
@@ -205,7 +206,7 @@ export default {
         }
       }
     },
-    async logout() {tr
+    async logout() {
       try {
         await axiosInstance.post('/v1/auth/logout');
         localStorage.removeItem('Authorization');
@@ -227,4 +228,4 @@ export default {
 }
 </script>
 
-<style src="../../assets/css/placeManage.css"></style>
+<style src="../../assets/css/placeManage.css" scoped></style>

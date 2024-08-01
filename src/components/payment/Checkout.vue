@@ -150,4 +150,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/payment.css"></style>
+<style src="../../assets/css/payment.css" scoped></style>
