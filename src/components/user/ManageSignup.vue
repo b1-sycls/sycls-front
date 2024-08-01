@@ -1,12 +1,36 @@
 <template>
   <div class="signup-container">
+    <h2>매니저용</h2>
     <h1>공연장 티케팅 회원가입</h1>
     <form @submit.prevent="submitForm">
       <label for="email">이메일</label>
       <div class="email-container">
-        <input type="email" v-model="email" placeholder="이메일을 입력하세요" required>
-        <button type="button" @click="checkEmailDuplication">중복 확인</button>
-        <button type="button" @click="sendEmailVerification">인증</button>
+        <input
+            type="email"
+            v-model="email"
+            placeholder="이메일을 입력하세요"
+            :disabled="isEmailChecked || isVerificationSent"
+            @input="resetEmailCheck"
+            required
+        />
+        <button
+            type="button"
+            v-if="isEmailChecked"
+            @click="resetEmailCheck"
+            :disabled="isVerificationSent"
+            :class="{ 'disabled-button': isVerificationSent }"
+        >재설정</button>
+        <button
+            type="button"
+            v-else
+            @click="checkEmailDuplication"
+        >중복 확인</button>
+        <button
+            type="button"
+            @click="sendEmailVerification"
+            :disabled="!isEmailChecked || isVerificationSent"
+            :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
+        >인증</button>
       </div>
 
       <div v-if="emailCodeVisible">
@@ -37,7 +61,7 @@
 
       <button type="submit">가입하기</button>
     </form>
-    <button class="main-button" @click="goToMain">메인 화면으로</button>
+    <button class="main-button" @click="goToLogin">로그인 화면으로</button>
   </div>
 </template>
 
@@ -56,7 +80,9 @@ export default {
       phone: '',
       password: '',
       confirmPassword: '',
-      adminCode: ''
+      adminCode: '',
+      isEmailChecked: false,
+      isVerificationSent: false
     };
   },
   methods: {
@@ -71,13 +97,16 @@ export default {
         const isDuplicated = response.data.data;
         if (isDuplicated) {
           alert('이메일이 이미 사용 중입니다.');
+          this.isEmailChecked = false;
         } else {
           alert('이메일을 사용할 수 있습니다.');
+          this.isEmailChecked = true;
         }
       })
       .catch(error => {
         console.error(error);
         alert(error.response?.data?.message || '이메일 중복 확인에 실패했습니다.');
+        this.isEmailChecked = false;
       });
     },
     sendEmailVerification() {
@@ -89,6 +118,7 @@ export default {
       axiosAdminInstance.post('/v1/auth/send-verification-code', { email: this.email })
       .then(response => {
         this.emailCodeVisible = true;
+        this.isVerificationSent = true;
         alert(response.data.message);
       })
       .catch(error => {
@@ -143,8 +173,14 @@ export default {
         alert(error.response?.data?.message || '회원가입에 실패했습니다.');
       });
     },
-    goToMain() {
-      this.$router.push({ name: 'ManageMainPage' });
+    resetEmailCheck() {
+      this.isEmailChecked = false;
+      this.isVerificationSent = false;
+      this.emailCodeVisible = false;
+      this.emailCode = '';
+    },
+    goToLogin() {
+      this.$router.push({ name: 'ManageLogin' });
     }
   }
 };
