@@ -24,7 +24,7 @@
       <div id="agreement"></div>
       <!-- 결제하기 버튼 -->
       <div class="result wrapper">
-        <button class="button" id="payment-button" style="margin-top: 30px">
+        <button class="button" id="payment-button" style="margin-top: 30px" @click="handlePayment">
           결제하기
         </button>
       </div>
@@ -44,7 +44,6 @@ export default {
       description: '',
       location: '',
       contentRoundId: '',
-      sequence: '',
       startDate: '',
       startTime: '',
       endTime: '',
@@ -57,7 +56,7 @@ export default {
     async fetchClientKey() {
       try {
         const response = await axiosInstance.post('/v1/payment/client-key');
-        return response.data.data.clientKey;
+        return response.data.data;
       } catch (error) {
         console.error("클라이언트 키를 가져오는 데 실패했습니다:", error);
         alert("클라이언트 키를 가져오는 데 실패했습니다");
@@ -71,11 +70,10 @@ export default {
         const data = response.data.data;
 
         this.contentId = data.contentId;
-        this.contentTitle = data.contentTitle;
+        this.contentTitle = data.contentTitle + " 회차( " + data.sequence + " )";
         this.description = data.description;
         this.location = data.location;
         this.contentRoundId = data.roundId;
-        this.sequence = data.sequence;
         this.startDate = data.startDate;
         this.startTime = data.startTime;
         this.endTime = data.endTime;
@@ -101,7 +99,7 @@ export default {
       }
     },
     async main() {
-      const clientKey = await this.fetchClientKey();
+      const userInfo = await this.fetchClientKey();
       await this.fetchReservationInfo();
       await this.fetchConcertAndRound();
 
@@ -112,8 +110,7 @@ export default {
       };
 
       const customerKey = this.generateRandomString();
-      const tossPayments = TossPayments(clientKey);
-
+      const tossPayments = TossPayments(userInfo.clientKey);
 
       const widgets = tossPayments.widgets({
         customerKey,
@@ -131,12 +128,12 @@ export default {
       button.addEventListener("click", async () => {
         await widgets.requestPayment({
           orderId: this.generateRandomString(),
-          orderName: "서윤조이스",
+          orderName: "에티켓(EveryTicket)",
           successUrl: window.location.origin + "/payment/success",
           failUrl: window.location.origin + "/payment/fail",
-          customerEmail: "customer123@gmail.com",
-          customerName: "김토스",
-          customerMobilePhone: "01012341234",
+          customerEmail: userInfo.email,
+          customerName: userInfo.username,
+          customerMobilePhone: userInfo.phoneNumber,
         });
       });
     },
