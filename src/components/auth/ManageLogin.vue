@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <button class="main-button" @click="goToMain">메인 화면으로</button>
     <div class="login-container">
       <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="45" fill="#4CAF50"/>
         <path d="M50 25 L50 75 M25 50 L75 50" stroke="white" stroke-width="8"/>
       </svg>
+      <h2>매니저용</h2>
       <h1>에티켓(everyTicket) 로그인</h1>
       <form id="login-form" @submit="handleSubmit">
         <input type="text" v-model="email" placeholder="Email" required>
@@ -63,10 +63,10 @@
 </template>
 
 <script>
-import {axiosInstance} from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 
 export default {
-  name: 'Login',
+  name: 'AdminLogin',
   data() {
     return {
       email: '',
@@ -90,7 +90,7 @@ export default {
       event.preventDefault(); // 기본 폼 제출 동작 방지
       try {
         // Axios 요청
-        const response = await axiosInstance.post('/v1/auth/login', {
+        const response = await axiosAdminInstance.post('/v1/auth/login', {
           email: this.email,
           password: this.password
         });
@@ -111,7 +111,7 @@ export default {
       }
     },
     goToCheckOut() {
-      this.$router.push({name: 'MainPage'});
+      this.$router.push({name: 'ManageMain'});
     },
     showFindIdModal() {
       this.showFindId = true;
@@ -126,7 +126,7 @@ export default {
       this.showFindPassword = false;
     },
     findEmail() {
-      axiosInstance.get('/v1/auth/forget-email', {
+      axiosAdminInstance.get('/v1/auth/forget-email', {
         params: {
           username: this.findIdForm.username,
           phoneNumber: this.findIdForm.phoneNumber
@@ -147,7 +147,8 @@ export default {
         return;
       }
 
-      axiosInstance.post('/v1/auth/send-verification-code', {email: this.findPasswordForm.email})
+      axiosAdminInstance.post('/v1/auth/send-verification-code',
+          {email: this.findPasswordForm.email})
       .then(response => {
         this.emailCodeVisible = true;
         alert(response.data.message);
@@ -158,7 +159,7 @@ export default {
       });
     },
     resetPassword() {
-      axiosInstance.patch('/v1/auth/forget-password', {
+      axiosAdminInstance.patch('/v1/auth/forget-password', {
         email: this.findPasswordForm.email,
         newPassword: this.findPasswordForm.newPassword,
         code: this.findPasswordForm.emailCode
@@ -173,10 +174,7 @@ export default {
       });
     },
     goToSignup() {
-      this.$router.push({name: 'Signup'});
-    },
-    goToMain() {
-      this.$router.push({name: 'MainPage'});
+      this.$router.push({name: 'ManageSignup'});
     }
   }
 };
