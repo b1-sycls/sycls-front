@@ -70,6 +70,11 @@ const routes = [
         path: '/manage/category',
         name: 'Category',
         component: () => import('@/components/category/Category.vue')
+    },
+    {
+        path: '/manage/concert/:id',
+        name: 'ManageConcert',
+        component: () => import('@/components/round/ManageConcert.vue')
     }
 ];
 
