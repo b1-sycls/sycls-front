@@ -33,7 +33,6 @@
           <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
-          <p>카테고리: {{ concert.categoryName }}</p>
           <button class="book-button" @click="viewConcert(concert)">상세 조회</button>
         </div>
       </div>

@@ -2,58 +2,63 @@
   <div class="container">
     <h1>{{ concert.title }}</h1>
     <div class="concert-info">
-      <img :src="concert.mainImage" :alt="concert.title + ' 메인 이미지'" class="main-image" width="800" height="533">
+      <div class="left-side">
+        <img :src="concert.mainImage" :alt="concert.title + ' 메인 이미지'" class="main-image" width="800" height="533">
 
-      <div class="custom-slider">
-        <button @click="prevSlide" class="slider-button prev-button">&#10094;</button>
-        <div class="slider-images">
-          <img v-for="(image, index) in concert.subImages"
-               :key="index"
-               :src="image"
-               :alt="concert.title + ' 서브 이미지 ' + (index + 1)"
-               class="slider-image"
-               :class="{ active: currentIndex === index }">
-        </div>
-        <button @click="nextSlide" class="slider-button next-button">&#10095;</button>
-      </div>
-
-      <p>{{ concert.description }}</p>
-      <p><strong>카테고리:</strong> {{ concert.category }}</p>
-      <p><strong>기간:</strong> {{ concert.date }}</p>
-      <p><strong>회차:</strong> {{ selectedShow ? selectedShow.sequence + '회차' : '선택되지 않음' }}</p>
-    </div>
-    <div class="show-info">
-      <div class="show-dates">
-        <h2>공연 날짜</h2>
-        <ul>
-          <li v-for="show in concert.shows" :key="show.roundId"
-              @click="selectShow(show)"
-              :class="{ selected: selectedShow === show }">
-            {{ show.startDate }} ({{ formatDay(new Date(show.startDate)) }})
-          </li>
-        </ul>
-      </div>
-      <div class="show-details" v-if="selectedShow">
-        <h2>상세 정보</h2>
-        <p><strong>시간:</strong> {{ selectedShow.startTime }} ~ {{ selectedShow.endTime }}</p>
-        <div class="performers-slider">
-          <button @click="prevPerformerSlide" class="performer-slider-button prev-button">&#10094;</button>
-          <div class="performers-images" :style="{ transform: `translateX(-${performerIndex * 100}%)` }">
-            <div v-for="(performer, index) in performers" :key="performer.castId" class="performer-slide">
-              <img :src="performer.imagePath" :alt="performer.name" class="performer-image">
-              <p>{{ performer.name }}</p>
-            </div>
+        <div class="custom-slider">
+          <button @click="prevSlide" class="slider-button prev-button">&#10094;</button>
+          <div class="slider-images">
+            <img v-for="(image, index) in concert.subImages"
+                 :key="index"
+                 :src="image"
+                 :alt="concert.title + ' 서브 이미지 ' + (index + 1)"
+                 class="slider-image"
+                 :class="{ active: currentIndex === index }">
           </div>
-          <button @click="nextPerformerSlide" class="performer-slider-button next-button">&#10095;</button>
+          <button @click="nextSlide" class="slider-button next-button">&#10095;</button>
         </div>
-        <button class="book-button" @click="bookTicket">
-          예매하기
-        </button>
+
+        <p>{{ concert.description }}</p>
+      </div>
+      <div class="center-side">
+        <p><strong>카테고리:</strong> {{ concert.category }}</p>
+        <p><strong>기간:</strong> {{ concert.date }}</p>
+        <p><strong>회차:</strong> {{ selectedShow ? selectedShow.sequence + '회차' : '선택되지 않음' }}</p>
+      </div>
+      <div class="show-info">
+        <div class="show-dates">
+          <h2>공연 날짜</h2>
+          <ul>
+            <li v-for="show in concert.shows" :key="show.roundId"
+                @click="selectShow(show)"
+                :class="{ selected: selectedShow === show }">
+              {{ show.startDate }} ({{ formatDay(new Date(show.startDate)) }})
+            </li>
+          </ul>
+        </div>
+        <div class="show-details" v-if="selectedShow">
+          <h2>상세 정보</h2>
+          <p><strong>시간:</strong> {{ selectedShow.startTime }} ~ {{ selectedShow.endTime }}</p>
+          <p><strong>공연장:</strong> {{ selectedShow.placeName }} </p>
+          <p><strong>위치:</strong> {{ selectedShow.placeLocation }}</p>
+          <div class="performers-slider">
+            <button @click="prevPerformerSlide" class="performer-slider-button prev-button">&#10094;</button>
+            <div class="performers-images" :style="{ transform: `translateX(-${performerIndex * 100}%)` }">
+              <div v-for="(performer, index) in performers" :key="performer.castId" class="performer-slide">
+                <img :src="performer.imagePath" :alt="performer.name" class="performer-image">
+                <p>{{ performer.name }}</p>
+              </div>
+            </div>
+            <button @click="nextPerformerSlide" class="performer-slider-button next-button">&#10095;</button>
+          </div>
+          <button class="book-button" @click="bookTicket">
+            예매하기
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <script>
 import {axiosInstance} from "@/axios.js";
@@ -157,7 +162,5 @@ export default {
   }
 };
 </script>
-
-
 
 <style src="../../assets/css/concert.css" scoped></style>
