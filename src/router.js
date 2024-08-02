@@ -22,6 +22,11 @@ const routes = [
         component: () => import('@/components/seat/SeatManage.vue')
     },
     {
+        path: '/seatgrade/seatgradeManage',
+        name: 'SeatGradeManage',
+        component: () => import('@/components/seat/SeatGradeManage.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')
@@ -70,6 +75,11 @@ const routes = [
         path: '/manage/category',
         name: 'Category',
         component: () => import('@/components/category/Category.vue')
+    },
+    {
+        path: '/manage/concert/:id',
+        name: 'ManageConcert',
+        component: () => import('@/components/round/ManageConcert.vue')
     }
 ];
 
