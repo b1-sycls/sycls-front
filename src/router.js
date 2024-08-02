@@ -22,6 +22,11 @@ const routes = [
         component: () => import('@/components/seat/SeatManage.vue')
     },
     {
+        path: '/seatgrade/seatgradeManage',
+        name: 'SeatGradeManage',
+        component: () => import('@/components/seat/SeatGradeManage.vue')
+    },
+    {
         path: '/payment/checkout',
         name: 'CheckOut',
         component: () => import('@/components/payment/Checkout.vue')
