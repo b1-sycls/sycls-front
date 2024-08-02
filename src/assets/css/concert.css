@@ -154,3 +154,318 @@ h1, h2 {
   background-color: #BDBDBD;
   cursor: not-allowed;
 }
+
+/* 추가된 CSS */
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #4A148C;
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.user-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.user-actions a,
+.user-actions button {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.user-actions a:hover,
+.user-actions button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+nav {
+  background-color: #333;
+  padding: 0.5rem 1rem;
+}
+
+.nav-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.categories-dropdown select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.search-bar {
+  display: flex;
+  width: 500px;
+}
+
+.search-bar input {
+  flex-grow: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px 0 0 4px;
+}
+
+.search-bar button {
+  padding: 0.5rem 1rem;
+  background-color: #4A148C;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.concert-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.concert-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.concert-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.concert-item img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.genre-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.book-button {
+  background-color: #4A148C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.25rem;
+}
+
+.book-button:hover {
+  background-color: #6A1B9A;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 0.5rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #4A148C;
+  color: white;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-content label {
+  display: block;
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: calc(100% - 20px);
+  margin: 10px 0;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.modal-content textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.modal-content .book-button {
+  width: calc(50% - 10px);
+  margin: 0.5rem 5px;
+}
+
+.modal-content .book-button:hover {
+  background-color: #6A1B9A;
+}
+
+.modal-content .book-button.cancel-button {
+  background-color: #ddd;
+  color: #333;
+}
+
+.modal-content .book-button.cancel-button:hover {
+  background-color: #bbb;
+}
+
+.modal-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.slider-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.custom-slider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.slider-images {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: 600px; /* Set a fixed height for the slider */
+  align-items: center;
+}
+
+.slider-image-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  padding: 10px;
+}
+
+.slider-image {
+  max-width: 100%;
+  max-height: 100%; /* Ensure image fits within the fixed height */
+  object-fit: contain; /* Maintain aspect ratio and fit within bounds */
+}
+
+.image-status {
+  text-align: center;
+  font-size: 1rem;
+  color: #666;
+  margin-top: 10px;
+}
+
+.slider-button {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.prev-button {
+  left: 0;
+}
+
+.next-button {
+  right: 0;
+}
