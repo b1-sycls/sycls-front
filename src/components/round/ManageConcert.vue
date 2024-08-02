@@ -59,6 +59,7 @@
 
     <button @click="openAddRoundModal" class="book-button">회차 추가</button>
 
+    <!--TODO 시간창 00:00 ~ 24:00 으로 바꼈으면 좋겠음-->
     <!-- Add Round Modal -->
     <div v-if="showAddRoundModal" class="modal" @click.self="closeAddRoundModal">
       <div class="modal-content">
@@ -84,6 +85,7 @@
       </div>
     </div>
 
+    <!--TODO 시간창 00:00 ~ 24:00 으로 바꼈으면 좋겠음-->
     <!-- Edit Round Modal -->
     <div v-if="showEditRoundModal" class="modal" @click.self="closeEditRoundModal">
       <div class="modal-content">
@@ -317,18 +319,21 @@ export default {
       this.showEditRoundModal = false;
     },
     updateRound() {
+      // 시간 값을 초 단위 없이 포맷팅
+      const startTimeFormatted = this.selectedShow.startTime.length === 5 ? this.selectedShow.startTime : this.selectedShow.startTime.slice(0, 5);
+      const endTimeFormatted = this.selectedShow.endTime.length === 5 ? this.selectedShow.endTime : this.selectedShow.endTime.slice(0, 5);
+
       axiosAdminInstance.patch(`/v1/rounds/${this.selectedShow.roundId}`, {
         placeId: this.selectedShow.placeId,
         startDate: this.selectedShow.startDate,
-        startTime: this.selectedShow.startTime,
-        endTime: this.selectedShow.endTime
+        startTime: startTimeFormatted,
+        endTime: endTimeFormatted
       })
       .then(response => {
+        // TODO 이페이지에 들어올때 place 정보를 가져오는데 그걸 수정하면 이 수정 메서드를 하고나서 반영 했으면 좋겠음 현재는 공연장, 공연장 위치정보 말고는 다 새로고침됨
         this.fetchConcertDetails();
-        this.selectShow(this.selectedShow);  // 회차 수정 후 해당 회차를 선택하여 최신화
         this.closeEditRoundModal();
         this.closeStatusModal();
-        // TODO 회차 수정한다음에 공연장소가 업데이트가되야하는데 안됨 (캐싱되서)
         alert('회차가 성공적으로 수정되었습니다.');
       })
       .catch(error => {
