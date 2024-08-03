@@ -186,7 +186,12 @@ export default {
           this.$router.push({ name: 'CheckOut' });
         } catch (error) {
           console.error('요청 중 오류 발생:', error);
-          alert('요청 중 오류가 발생했습니다. 다시 시도해주세요.');
+          if(error.response.data.message === "이미 취소 된 예매 정보입니다."){
+            alert('이미 예매 중이거나 매진된 좌석입니다.\n새로고침 후 다시 시도해주세요.');
+          }else{
+            alert('예매에 실패했습니다.\n다시 시도해주세요.');
+          }
+
         }
       } else {
         alert('좌석을 선택해주세요.');
