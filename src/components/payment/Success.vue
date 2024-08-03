@@ -1,8 +1,6 @@
 <template>
   <div>
     <div class="box_section" style="width: 600px">
-      <img width="100px" src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png"/>
-      <h2>결제를 완료했어요</h2>
       <!--    TODO-->
       <!--      <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
       <!--        <div class="p-grid-col text&#45;&#45;left"><b>paymentKey</b></div>-->
@@ -34,15 +32,14 @@
       </div>
 
       <div class="total">
-        총 결제 금액: {{ amount }}원
+        총 결제 금액: {{ totalPrice }}원
       </div>
 
       <div class="buttons">
-        <a href="https://websim.creativeengine.ai/everyTicket/" class="button">홈으로</a>
-        <a href="https://websim.creativeengine.ai/everyTicket/mytickets" class="button">내 티켓 보기</a>
+        <router-link to="/" class="button">홈으로</router-link>
       </div>
     </div>
-<!--    TODO-->
+    <!--    TODO-->
     <!--  <div class="box_section" style="width: 600px; text-align: left">-->
     <!--    <b>Response Data :</b>-->
     <!--    <div id="response" style="white-space: initial">-->
@@ -59,6 +56,7 @@ export default {
   data() {
     return {
       contentId: '',
+      roundId: 0,
       contentTitle: '',
       location: '',
       startDate: '',
@@ -78,54 +76,17 @@ export default {
       this.startTime = data.startTime;
       this.endTime = data.endTime;
       this.seatInfos = data.seatInfos;
-      // sessionStorage에서 데이터 삭제
-      sessionStorage.removeItem('contentData');
+      this.totalPrice = data.totalPrice;
+      this.roundId = data.roundId;
     } else {
       console.error("No data found in session storage");
     }
   },
   created() {
     const urlParams = new URLSearchParams(window.location.search);
-    this.paymentKey = urlParams.get("paymentKey");
     this.orderId = urlParams.get("orderId");
-    this.amount = urlParams.get("amount");
-
-    this.confirm();
   },
-  methods: {
-    async confirm() {
-      const requestData = {
-        paymentKey: this.paymentKey,
-        orderId: this.orderId,
-        amount: this.amount,
-      };
-
-      try {
-        const response = await axiosInstance.post("/v1/payment/confirm", requestData);
-        const json = response.data;
-
-        if (response.status !== 200) {
-          // 결제 실패 비즈니스 로직
-          console.log(json);
-          window.location.href = `/payment/fail?message=${json.message}&code=${json.code}`;
-        } else {
-          // 결제 성공 비즈니스 로직
-          this.responseData = JSON.stringify(json, null, 4);
-        }
-      } catch (error) {
-        console.error("Error during confirmation:", error);
-        if (error.response) {
-          const {data} = error.response;
-          window.location.href = `/payment/fail?message=${data.message}&code=${data.code}`;
-        }
-      }
-    }
-    ,
-    navigateTo(url) {
-      window.location.href = url;
-    }
-  }
-};
+}
 </script>
 
 <style src="../../assets/css/success.css" scoped></style>
