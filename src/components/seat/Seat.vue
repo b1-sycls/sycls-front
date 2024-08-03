@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import {axiosInstance} from "@/axios.js";
+import { axiosInstance } from "@/axios.js";
 
 export default {
   name: 'Seat',
@@ -83,11 +83,26 @@ export default {
   methods: {
     async fetchSeatInfo() {
       const roundId = this.$route.query.roundId;
-      const response = await axiosInstance.get(`v1/seat-grades?roundId=${roundId}`);
+      const response = await axiosInstance.get(`/v1/seat-grades?roundId=${roundId}`);
       return response.data.data;
+    },
+    async fetchReservationLog() {
+      const roundId = this.$route.query.roundId;
+      const getResponse = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/reserve`);
+      return getResponse.data.data;
     },
     async main() {
       const seatRes = await this.fetchSeatInfo();
+      const reservationRes = await this.fetchReservationLog();
+      if(reservationRes.reservationIds.length !== 0){
+        if(confirm("이전에 예매 진행 중이던 자리가 있습니다.\n계속하시겠습니까?")){
+          this.$router.push({ name: 'CheckOut' });
+        }else{
+          await axiosInstance.post(`/v1/reservations/release`, {
+            reservationIds: reservationRes.reservationIds,
+          });
+        }
+      }
       console.log(seatRes);
       const seatGradeList = seatRes.seatGradeList;
 
@@ -122,6 +137,7 @@ export default {
           if (this.selectedSeats.length < this.maxSeats) {
             this.selectedSeats.push(seatCode);
             this.selectedSeatDetails.push({
+              seatId: seat.seatId, // seatId 추가
               seatCode: seat.seatCode,
               seatGrade: seat.seatGradeType,
               seatPrice: seat.seatGradePrice.toLocaleString()
@@ -156,14 +172,22 @@ export default {
     applyZoom() {
       document.getElementById('seats').style.transform = `scale(${this.currentZoom})`;
     },
-    confirmSelection() {
+    async confirmSelection() {
       if (this.selectedSeats.length > 0) {
-        alert(`선택된 좌석: ${this.selectedSeats.join(', ')}\n예매를 진행합니다.`);
-        this.$router.push({
-          name: 'CheckOut', query: {
-            roundId: this.$route.query.roundId
-          }
-        });
+        try {
+          alert(`선택된 좌석: ${this.selectedSeats.join(', ')}\n예매를 진행합니다.`);
+          const roundId = this.$route.query.roundId;
+          const seatGradeIds = this.selectedSeatDetails.map(detail => detail.seatId); // seatId 사용
+          await axiosInstance.post('/v1/reservations/reserve', {
+            roundId: roundId,
+            seatGradeIds: seatGradeIds,
+            totalPrice: this.totalSelectedPrice
+          });
+          this.$router.push({ name: 'CheckOut' });
+        } catch (error) {
+          console.error('요청 중 오류 발생:', error);
+          alert('요청 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
       } else {
         alert('좌석을 선택해주세요.');
       }
