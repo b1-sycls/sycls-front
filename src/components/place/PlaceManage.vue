@@ -79,6 +79,7 @@
 
 <script>
 import {axiosAdminInstance, axiosInstance} from "@/axios.js";
+import {logoutAdminUser} from "@/utils.js";
 
 export default {
   name: 'PlaceManage',
@@ -206,15 +207,10 @@ export default {
       }
     },
     async logout() {
-      try {
-        await axiosInstance.post('/v1/auth/logout');
-        localStorage.removeItem('Authorization');
-        localStorage.removeItem('RefreshToken');
-        this.$router.push({ name: 'MainPage' });
-        alert('로그아웃 하셨습니다.');
-      } catch (error) {
-        console.error('Logout failed', error);
-        alert('로그아웃에 실패했습니다.');
+      const success = await logoutAdminUser();
+      if (success) {
+        this.isLoggedIn = false;
+        this.$router.push({ name: 'ManageLogin' });
       }
     },
     editSeats(placeId, name, maxSeat) {
