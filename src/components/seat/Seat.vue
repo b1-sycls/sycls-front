@@ -180,8 +180,7 @@ export default {
           const seatGradeIds = this.selectedSeatDetails.map(detail => detail.seatId); // seatId 사용
           await axiosInstance.post('/v1/reservations/reserve', {
             roundId: roundId,
-            seatGradeIds: seatGradeIds,
-            totalPrice: this.totalSelectedPrice
+            seatGradeIds: seatGradeIds
           });
           this.$router.push({ name: 'CheckOut', query:{roundId: roundId}});
         } catch (error) {
