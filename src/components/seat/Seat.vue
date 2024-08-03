@@ -88,10 +88,18 @@ export default {
     },
     async fetchReservationLog() {
       const roundId = this.$route.query.roundId;
-      const getResponse = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/reserve`);
-      return getResponse.data.data;
+      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/reserve`);
+      return response.data.data;
+    },
+    async fetchOccupiedSeat(seatGradeIdList) {
+      const roundId = this.$route.query.roundId;
+      const params = new URLSearchParams();
+      seatGradeIdList.forEach(id => params.append('seatGradeIdList', id));
+      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/occupied`, { params });
+      return response.data.data;
     },
     async main() {
+      const roundId = this.$route.query.roundId;
       const seatRes = await this.fetchSeatInfo();
       const reservationRes = await this.fetchReservationLog();
       if(reservationRes.reservationIds.length !== 0){
@@ -103,12 +111,19 @@ export default {
           });
         }
       }
-      console.log(seatRes);
       const seatGradeList = seatRes.seatGradeList;
-
+      const seatGradeIdList = [];
+      seatGradeList.forEach(seat =>
+          seatGradeIdList.push(seat.seatGradeId)
+      );
+      const occupied = await this.fetchOccupiedSeat(seatGradeIdList);
       const layout = [];
-
       seatGradeList.forEach(seat => {
+        occupied.seatGradeIds.forEach(id => {
+          if(seat.seatGradeId === id){
+            seat.seatStatusYn = false;
+          }
+        })
         const rowIndex = seat.seatCode.charCodeAt(0) - 65;
         const seatIndex = parseInt(seat.seatCode.slice(1)) - 1;
 
