@@ -5,7 +5,7 @@
       <div class="event">
         <p><strong>공연명:</strong> {{ contentTitle }}</p>
         <p><strong>장소:</strong> {{ location }}</p>
-        <p><strong>일시:</strong> {{ startDate }} {{ startTime }}</p>
+        <p><strong>일시:</strong> {{ startDate }} {{ startTime }} ~ {{ endTime }}</p>
         <p><strong>선택 좌석:</strong>
           <span v-for="(seatInfo, index) in seatInfos" :key="index">
             <template v-if="index > 0">, </template>
@@ -44,11 +44,9 @@ export default {
       description: '',
       location: '',
       contentRoundId: '',
-      sequence: '',
       startDate: '',
       startTime: '',
       endTime: '',
-      roundId: '',
       seatInfos: [],
       totalPrice: 0
     };
@@ -57,26 +55,41 @@ export default {
     async fetchClientKey() {
       try {
         const response = await axiosInstance.post('/v1/payment/client-key');
-        return response.data.data.clientKey;
+        return response.data.data;
       } catch (error) {
         console.error("클라이언트 키를 가져오는 데 실패했습니다:", error);
+        alert("클라이언트 키를 가져오는 데 실패했습니다");
+        location.href = "/";
         throw error;
       }
     },
     async fetchConcertAndRound() {
       try {
-        const response = await axiosInstance.get('/v1/rounds/1');
+        // TODO
+        const roundId = this.$route.query.roundId;
+        const response = await axiosInstance.get(`/v1/rounds/${roundId}`);
         const data = response.data.data;
 
         this.contentId = data.contentId;
-        this.contentTitle = data.contentTitle;
+        this.contentTitle = data.contentTitle + " 회차( " + data.sequence + " )";
         this.description = data.description;
         this.location = data.location;
         this.contentRoundId = data.roundId;
-        this.sequence = data.sequence;
         this.startDate = data.startDate;
         this.startTime = data.startTime;
         this.endTime = data.endTime;
+
+        // sessionStorage에 데이터 저장
+        sessionStorage.setItem('contentData', JSON.stringify({
+          contentId: this.contentId,
+          contentTitle: this.contentTitle,
+          location: this.location,
+          startDate: this.startDate,
+          startTime: this.startTime,
+          endTime: this.endTime,
+          seatInfos: this.seatInfos,
+          totalPrice: this.totalPrice
+        }));
       } catch (error) {
         console.error("공연 및 회차 정보를 가져오는 데 실패했습니다:", error);
       }
@@ -85,6 +98,13 @@ export default {
       try {
         const response = await axiosInstance.get('/v1/reservations/reserve/detail');
         this.seatInfos = response.data.data.seatInfos;
+
+        if (!this.seatInfos || this.seatInfos.length === 0) {
+          console.log("예약 정보가 없습니다.");
+          alert("예약 정보가 없습니다.");
+          location.href = "/";
+        }
+
         // 총 결제 금액 계산
         this.totalPrice = this.seatInfos.reduce((total, seat) => total + (seat.price * seat.quantity), 0);
       } catch (error) {
@@ -92,8 +112,9 @@ export default {
       }
     },
     async main() {
-      await this.fetchConcertAndRound();
+      const userInfo = await this.fetchClientKey();
       await this.fetchReservationInfo();
+      await this.fetchConcertAndRound();
 
       const button = document.getElementById("payment-button");
       const amount = {
@@ -101,10 +122,8 @@ export default {
         value: this.totalPrice,
       };
 
-      const clientKey = await this.fetchClientKey();
       const customerKey = this.generateRandomString();
-      const tossPayments = TossPayments(clientKey);
-
+      const tossPayments = TossPayments(userInfo.clientKey);
 
       const widgets = tossPayments.widgets({
         customerKey,
@@ -122,12 +141,12 @@ export default {
       button.addEventListener("click", async () => {
         await widgets.requestPayment({
           orderId: this.generateRandomString(),
-          orderName: "서윤조이스",
-          successUrl: window.location.origin + "/payment/success",
-          failUrl: window.location.origin + "/payment/fail",
-          customerEmail: "customer123@gmail.com",
-          customerName: "김토스",
-          customerMobilePhone: "01012341234",
+          orderName: "에티켓(EveryTicket)",
+          successUrl: `${window.location.origin}/payment/middle`,
+          failUrl: `${window.location.origin}/payment/fail`,
+          customerEmail: userInfo.email,
+          customerName: userInfo.username,
+          customerMobilePhone: userInfo.phoneNumber,
         });
       });
     },

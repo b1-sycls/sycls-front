@@ -1,107 +1,104 @@
-<template xmlns="http://www.w3.org/1999/html">
-  <div class="box_section" style="width: 600px">
-    <img width="100px" src="https://static.toss.im/illusts/check-blue-spot-ending-frame.png"/>
-    <h2>결제를 완료했어요</h2>
+<template>
+  <div>
+    <div class="box_section" style="width: 600px">
+      <!--    TODO-->
+      <!--      <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
+      <!--        <div class="p-grid-col text&#45;&#45;left"><b>paymentKey</b></div>-->
+      <!--        <div class="p-grid-col text&#45;&#45;right" id="paymentKey" style="white-space: initial; width: 250px">{{-->
+      <!--            paymentKey-->
+      <!--          }}-->
+      <!--        </div>-->
+      <!--    </div>-->
+    </div>
 
-    <div class="p-grid typography--p" style="margin-top: 50px">
-      <div class="p-grid-col text--left"><b>결제금액</b></div>
-      <div class="p-grid-col text--right" id="amount">
-        {{ amount }}
+    <div class="success-container">
+      <div class="success-icon">✔</div>
+      <h1>결제가 완료되었습니다!</h1>
+
+      <div class="ticket-info">
+        <p><strong>주문번호:</strong> {{ orderId }}</p>
+        <p><strong>공연명:</strong> {{ contentTitle }}</p>
+        <p><strong>장소:</strong> {{ location }}</p>
+        <p><strong>일시:</strong> {{ startDate }}</p>
+        <p><strong></strong> {{ startDate }} {{ startTime }} ~ {{ endTime }}</p>
+        <p><strong>선택 좌석:</strong>
+          <span v-for="(seatInfo, index) in seatInfos" :key="index">
+            <template v-if="index > 0">, </template>
+            <p><strong>    {{ seatInfo.seatGradeType }}</strong></p>
+            <template v-if="seatInfo.seatCodes.length > 1">({{ seatInfo.seatCodes.join(', ') }})</template>
+            <template v-else>({{ seatInfo.seatCodes[0] }})</template>
+          </span>
+        </p>
+      </div>
+
+      <div class="total">
+        총 결제 금액: {{ totalPrice }}원
+      </div>
+
+      <div class="buttons">
+        <router-link to="/" class="button">홈으로</router-link>
       </div>
     </div>
-    <div class="p-grid typography--p" style="margin-top: 10px">
-      <div class="p-grid-col text--left"><b>주문번호</b></div>
-      <div class="p-grid-col text--right" id="orderId">
-        {{ orderId }}
-      </div>
-    </div>
-    <div class="p-grid typography--p" style="margin-top: 10px">
-      <div class="p-grid-col text--left"><b>paymentKey</b></div>
-      <div class="p-grid-col text--right" id="paymentKey" style="white-space: initial; width: 250px">
-        {{ paymentKey }}
-      </div>
-    </div>
-  </div>
-
-  <div class="box_section" style="width: 600px; text-align: left">
-    <b>Response Data :</b>
-    <div id="response" style="white-space: initial"></div>
-  </div>
-
-  <h1> ai</h1>
-
-  <div class="ticket-info">
-    <p><strong>공연명:</strong> title1</p>
-    <p><strong>장소:</strong> locationPlace1</p>
-    <p><strong>일시:</strong> 2024-07-31 14:23:22</p>
-    <p><strong>선택 좌석:</strong> A_GRADE (A1), VIP (A3, A4)</p>
-  </div>
-
-  <div class="total">
-    총 결제 금액: 25,000원
-  </div>
-  <div class="buttons">
-    <router-link class="button" to="/">홈으로</router-link>
-    <!--    <router-link class="button" to="/">내 티켓 보기</router-link>-->
+    <!--    TODO-->
+    <!--  <div class="box_section" style="width: 600px; text-align: left">-->
+    <!--    <b>Response Data :</b>-->
+    <!--    <div id="response" style="white-space: initial">-->
+    <!--      <pre>{{ responseData }}</pre>-->
+    <!--    </div>-->
+    <!--  </div>-->
   </div>
 </template>
 
-
 <script>
-import {axiosInstance} from "@/axios.js";
+import {axiosInstance} from '@/axios.js';
 
 export default {
-  name: 'Success',
   data() {
     return {
-      paymentKey: '',
+      contentId: '',
+      roundId: 0,
+      contentTitle: '',
+      location: '',
+      startDate: '',
+      startTime: '',
+      endTime: '',
+      seatInfos: [],
+      totalPrice: 0,
       orderId: '',
-      amount: ''
     };
   },
-  async mounted() {
-    const urlParams = new URLSearchParams(window.location.search);
+  mounted() {
+    const data = JSON.parse(sessionStorage.getItem('contentData'));
+    if (data) {
+      this.contentId = data.contentId;
+      this.contentTitle = data.contentTitle;
+      this.location = data.location;
+      this.startDate = data.startDate;
+      this.startTime = data.startTime;
+      this.endTime = data.endTime;
+      this.seatInfos = data.seatInfos;
+      this.totalPrice = data.totalPrice;
+      this.roundId = data.roundId;
 
-    this.paymentKey = urlParams.get("paymentKey");
-    this.orderId = urlParams.get("orderId");
-    this.amount = urlParams.get("amount") + "원";
-
-    try {
-      const data = await this.confirm();
-      this.$refs.response.innerHTML = `<pre>${JSON.stringify(data, null, 4)}</pre>`;
-    } catch (error) {
-      console.log(error);
+      // seatInfos 내부의 reservationIds 추출
+      const reservationIds = this.seatInfos.reduce((acc, seatInfo) => {
+        return acc.concat(seatInfo.reservationIds);
+      }, []);
+      axiosInstance.post('/v1/payment/success', {
+        orderId: this.orderId,
+        price: this.totalPrice,
+        seatGradeIds: reservationIds
+      })
+    } else {
+      console.error("No data found in session storage");
     }
   },
-  methods: {
-    async confirm() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const requestData = {
-        paymentKey: urlParams.get("paymentKey"),
-        orderId: urlParams.get("orderId"),
-        amount: urlParams.get("amount"),
-      };
-
-      const response = await axiosInstance.post("/v1/payment/confirm", {
-        method: "POST",
-        body: JSON.stringify(requestData),
-      });
-
-      console.log(response);
-      // const json = await response.json();
-
-      if (!response.ok) {
-        // TODO: 결제 실패 비즈니스 로직을 구현하세요.
-        console.log(json);
-        window.location.href = `/v1/payment/fail?message=${json.message}&code=${json.code}`;
-      }
-
-      // TODO: 결제 성공 비즈니스 로직을 구현하세요.
-      // console.log(json);
-      return json;
-    }
-  }
-};
+  created() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.orderId = urlParams.get("orderId");
+  },
+}
 </script>
 
 <style src="../../assets/css/success.css" scoped></style>
+

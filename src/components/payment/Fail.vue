@@ -27,6 +27,7 @@ export default {
     const urlParams = new URLSearchParams(window.location.search);
     this.code = urlParams.get("code");
     this.message = urlParams.get("message");
+    console.log("왔어요~")
   }
 };
 </script>
