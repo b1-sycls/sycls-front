@@ -96,7 +96,7 @@ export default {
       const reservationRes = await this.fetchReservationLog();
       if(reservationRes.reservationIds.length !== 0){
         if(confirm("이전에 예매 진행 중이던 자리가 있습니다.\n계속하시겠습니까?")){
-          this.$router.push({ name: 'CheckOut' });
+          this.$router.push({ name: 'CheckOut', query:{roundId: roundId}});
         }else{
           await axiosInstance.post(`/v1/reservations/release`, {
             reservationIds: reservationRes.reservationIds,
@@ -183,7 +183,7 @@ export default {
             seatGradeIds: seatGradeIds,
             totalPrice: this.totalSelectedPrice
           });
-          this.$router.push({ name: 'CheckOut' });
+          this.$router.push({ name: 'CheckOut', query:{roundId: roundId}});
         } catch (error) {
           console.error('요청 중 오류 발생:', error);
           if(error.response.data.message === "이미 취소 된 예매 정보입니다."){
