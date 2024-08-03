@@ -91,11 +91,9 @@ export default {
       const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/reserve`);
       return response.data.data;
     },
-    async fetchOccupiedSeat(seatGradeIdList) {
+    async fetchOccupiedSeat() {
       const roundId = this.$route.query.roundId;
-      const params = new URLSearchParams();
-      seatGradeIdList.forEach(id => params.append('seatGradeIdList', id));
-      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/occupied`, { params });
+      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/occupied`);
       return response.data.data;
     },
     async main() {
@@ -112,11 +110,7 @@ export default {
         }
       }
       const seatGradeList = seatRes.seatGradeList;
-      const seatGradeIdList = [];
-      seatGradeList.forEach(seat =>
-          seatGradeIdList.push(seat.seatGradeId)
-      );
-      const occupied = await this.fetchOccupiedSeat(seatGradeIdList);
+      const occupied = await this.fetchOccupiedSeat();
       const layout = [];
       seatGradeList.forEach(seat => {
         occupied.seatGradeIds.forEach(id => {
