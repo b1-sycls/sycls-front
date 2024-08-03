@@ -63,7 +63,8 @@ export default {
       startTime: '',
       endTime: '',
       seatInfos: [],
-      totalPrice: 0
+      totalPrice: 0,
+      orderId: '',
     };
   },
   mounted() {
@@ -78,6 +79,16 @@ export default {
       this.seatInfos = data.seatInfos;
       this.totalPrice = data.totalPrice;
       this.roundId = data.roundId;
+
+      // seatInfos 내부의 reservationIds 추출
+      const reservationIds = this.seatInfos.reduce((acc, seatInfo) => {
+        return acc.concat(seatInfo.reservationIds);
+      }, []);
+      axiosInstance.post('/v1/payment/success', {
+        orderId: this.orderId,
+        price: this.totalPrice,
+        seatGradeIds: reservationIds
+      })
     } else {
       console.error("No data found in session storage");
     }
