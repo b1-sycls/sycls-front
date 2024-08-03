@@ -19,12 +19,14 @@ const routes = [
     {
         path: '/seat/manage',
         name: 'SeatManage',
-        component: () => import('@/components/seat/SeatManage.vue')
+        component: () => import('@/components/seat/SeatManage.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/seatgrade/seatgradeManage',
         name: 'SeatGradeManage',
-        component: () => import('@/components/seat/SeatGradeManage.vue')
+        component: () => import('@/components/seat/SeatGradeManage.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/payment/checkout',
@@ -59,12 +61,14 @@ const routes = [
     {
         path: '/place/placeManage',
         name: 'PlaceManage',
-        component: () => import('@/components/place/PlaceManage.vue')
+        component: () => import('@/components/place/PlaceManage.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/manage',
         name: 'ManageMainPage',
-        component: () => import('@/components/ManageMainPage.vue')
+        component: () => import('@/components/ManageMainPage.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/manage/signup',
@@ -79,16 +83,28 @@ const routes = [
     {
         path: '/manage/category',
         name: 'Category',
-        component: () => import('@/components/category/Category.vue')
+        component: () => import('@/components/category/Category.vue'),
+        meta: { requiresAuth: true }
     },
     {
         path: '/manage/concert/:id',
         name: 'ManageConcert',
-        component: () => import('@/components/round/ManageConcert.vue')
+        component: () => import('@/components/round/ManageConcert.vue'),
+        meta: { requiresAuth: true }
     }
 ];
 
 export const router = createRouter({
     history: createWebHistory(),
     routes,
-})
+});
+
+router.beforeEach((to, from, next) => {
+    const isLoggedIn = !!localStorage.getItem('Authorization');
+
+    if (to.matched.some(record => record.meta.requiresAuth) && !isLoggedIn) {
+        next('/manage/login'); // 로그인되지 않았을 경우 로그인 페이지로 리디렉션
+    } else {
+        next(); // 인증이 필요하지 않거나, 이미 로그인된 경우
+    }
+});

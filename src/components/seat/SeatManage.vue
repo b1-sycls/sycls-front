@@ -57,6 +57,7 @@
 
 <script>
 import { axiosAdminInstance } from "@/axios.js";
+import {logoutAdminUser} from "@/utils.js";
 
 export default {
   name: 'Seat',
@@ -184,6 +185,13 @@ export default {
       }
       // 좌석 삭제 후 상태 업데이트
       await this.main();
+    },
+    async logout() {
+      const success = await logoutAdminUser();
+      if (success) {
+        this.isLoggedIn = false;
+        this.$router.push({ name: 'ManageLogin' });
+      }
     },
     handleDelete() {
       if (!this.selectedSeat) {
