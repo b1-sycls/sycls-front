@@ -73,6 +73,7 @@
 
 <script>
 import { axiosAdminInstance } from "@/axios.js";
+import {logoutAdminUser} from "@/utils.js";
 
 export default {
   name: 'SeatGradeManage',
@@ -159,6 +160,13 @@ export default {
     },
     closeModal() {
       this.showModalFlag = false;
+    },
+    async logout() {
+      const success = await logoutAdminUser();
+      if (success) {
+        this.isLoggedIn = false;
+        this.$router.push({ name: 'ManageLogin' });
+      }
     },
     async handleModalAction() {
       // Ensure modalSeatGrade and modalSeatPrice are strings

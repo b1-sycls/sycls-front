@@ -161,7 +161,7 @@
 
 <script>
 import {axiosAdminInstance} from "@/axios.js";
-import {logoutAdminUser, logoutUser} from "@/utils.js";
+import {logoutAdminUser} from "@/utils.js";
 
 export default {
   name: 'MainPage',
