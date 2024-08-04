@@ -1,10 +1,10 @@
 <template>
   <div class="nav-bar">
-    <router-link to="/member-manage" class="nav-button">회원관리</router-link>
-    <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
-    <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
-    <router-link to="/manage" class="nav-button">공연관리</router-link>
-    <button @click="logout" class="nav-button">로그아웃</button>
+    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+    <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
+    <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
+    <router-link class="nav-button" to="/manage">공연관리</router-link>
+    <button class="nav-button" @click="logout">로그아웃</button>
   </div>
   <div id="app" class="container">
     <div class="header">
@@ -18,8 +18,8 @@
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
             <div v-if="seat === 0" class="spacer"></div>
             <div v-else
-                 class="seat"
                  :class="{ selected: isSelected(seat.seatCode), unavailable: seat.seatGradeStatus && seat.seatGradeStatus !== 'ENABLE' }"
+                 class="seat"
                  @click="toggleSeat(seat)">
               {{ seat.seatCode }}
             </div>
@@ -40,9 +40,11 @@
     </div>
     <div id="selectedSeats">
       <div class="management-controls">
-        <button class="button" :disabled="!selectedSeat" @click="showModal('추가')">좌석 등급 추가</button>
-        <button class="button" :disabled="!selectedSeat || !selectedSeat.seatGradeType" @click="showModal('수정')">좌석 등급 수정</button>
-        <button class="button" :disabled="!selectedSeat" @click="handleDelete">좌석 등급 삭제</button>
+        <button :disabled="!selectedSeat" class="button" @click="showModal('추가')">좌석 등급 추가</button>
+        <button :disabled="!selectedSeat || !selectedSeat.seatGradeType" class="button"
+                @click="showModal('수정')">좌석 등급 수정
+        </button>
+        <button :disabled="!selectedSeat" class="button" @click="handleDelete">좌석 등급 삭제</button>
         <button class="button" @click="handleCompleteGrades">좌석 등급 설정 완료</button>
       </div>
     </div>
@@ -61,7 +63,7 @@
           <option value="A">A_GRADE</option>
         </select>
         <label for="seatPrice">가격:</label>
-        <input id="seatPrice" v-model="modalSeatPrice" placeholder="가격을 입력하세요" />
+        <input id="seatPrice" v-model="modalSeatPrice" placeholder="가격을 입력하세요"/>
         <div class="modal-buttons">
           <button class="button" @click="handleModalAction">확인</button>
           <button class="button" @click="closeModal">취소</button>
@@ -72,7 +74,7 @@
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 import {logoutAdminUser} from "@/utils.js";
 
 export default {
@@ -99,7 +101,7 @@ export default {
     async fetchSeatGrades() {
       const roundId = this.$route.query.roundId;
       const response = await axiosAdminInstance.get(`/v1/seat-grades`, {
-        params: { roundId: roundId }
+        params: {roundId: roundId}
       });
       return response.data.data;
     },
@@ -119,14 +121,15 @@ export default {
         }
 
         const seatGradeInfo = seatGradesList.find(grade => grade.seatId === seat.seatId);
-        const seatWithGrade = { ...seat, ...seatGradeInfo };
+        const seatWithGrade = {...seat, ...seatGradeInfo};
 
         layout[rowIndex][seatIndex] = seatWithGrade;
       });
 
       this.seatLayout = layout.map(row => row.map(seat => seat ? seat : 0));
       this.maxSeat = this.$route.query.maxSeat;
-      this.seatCount = seatGradesList.filter(seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
+      this.seatCount = seatGradesList.filter(
+          seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
     },
     isSelected(code) {
       if (code === undefined || code === null) {
@@ -162,10 +165,10 @@ export default {
       this.showModalFlag = false;
     },
     async logout() {
-      const success = await logoutAdminUser();
+      const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     },
     async handleModalAction() {
@@ -187,8 +190,8 @@ export default {
 
       switch (this.modalAction) {
         case '추가':
-          if (this.selectedSeat){
-            await this.addSeat(this.selectedSeat.seatId ,seatGrade, seatPrice);
+          if (this.selectedSeat) {
+            await this.addSeat(this.selectedSeat.seatId, seatGrade, seatPrice);
             break;
           }
           break;
@@ -261,7 +264,7 @@ export default {
     async handleCompleteGrades() {
       try {
         // 좌석 등급 설정 완료 처리 로직
-        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */ });
+        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */});
         alert('좌석 등급 설정이 완료되었습니다.');
         await this.main();
       } catch (error) {
@@ -275,4 +278,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/seatGradeManage.css" scoped></style>
+<style scoped src="../../assets/css/seatGradeManage.css"></style>

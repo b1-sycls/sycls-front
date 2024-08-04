@@ -1,9 +1,9 @@
 <template>
   <div class="nav-bar">
-    <router-link to="/member-manage" class="nav-button">회원관리</router-link>
-    <router-link to="/place/placeManage" class="nav-button">공연관리</router-link>
-    <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
-    <button @click="logout" class="nav-button">로그아웃</button>
+    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+    <router-link class="nav-button" to="/place/placeManage">공연관리</router-link>
+    <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
+    <button class="nav-button" @click="logout">로그아웃</button>
   </div>
   <div id="app" class="container">
     <div class="header">
@@ -11,7 +11,7 @@
     </div>
 
     <div class="search-bar">
-      <label for="searchStatus" class="status-label">상태 선택:</label>
+      <label class="status-label" for="searchStatus">상태 선택:</label>
       <select id="searchStatus" v-model="searchStatus" class="search-status">
         <option value="">전체</option>
         <option value="ENABLE">활성화</option>
@@ -21,26 +21,28 @@
         <option value="name">이름</option>
         <option value="location">장소</option>
       </select>
-      <input v-model="searchQuery" class="search-input" type="text" placeholder="검색" @keyup.enter="searchVenues">
-      <button @click="searchVenues" class="search-button">검색</button>
+      <input v-model="searchQuery" class="search-input" placeholder="검색" type="text"
+             @keyup.enter="searchVenues">
+      <button class="search-button" @click="searchVenues">검색</button>
     </div>
 
     <div class="venue-grid">
-      <div v-for="venue in paginatedVenues" :key="venue.placeId" class="venue-item" @click="editVenue(venue)">
+      <div v-for="venue in paginatedVenues" :key="venue.placeId" class="venue-item"
+           @click="editVenue(venue)">
         <div class="venue-name">{{ venue.name }}</div>
         <div class="venue-address">{{ venue.location }}</div>
         <button class="delete-button" @click.stop="deleteVenue(venue.placeId)">삭제</button>
       </div>
     </div>
 
-    <div class="pagination" v-if="totalPages > 0">
-      <button v-for="page in totalPages" :key="page" @click="changePage(page)"
-              class="page-button" :class="{ active: currentPage === page }">
+    <div v-if="totalPages > 0" class="pagination">
+      <button v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }"
+              class="page-button" @click="changePage(page)">
         {{ page }}
       </button>
     </div>
 
-    <button @click="showRegisterModal" class="register-button">공연장 등록</button>
+    <button class="register-button" @click="showRegisterModal">공연장 등록</button>
 
     <!-- 공연장 등록/수정 모달 -->
     <div v-if="showModal" class="modal">
@@ -60,7 +62,7 @@
             <label for="venueMaxSeat">최대 좌석 수</label>
             <input id="venueMaxSeat" v-model="editingVenue.maxSeat" required type="number">
           </div>
-          <div class="form-group" v-if="isEditing">
+          <div v-if="isEditing" class="form-group">
             <label for="venueStatus">상태</label>
             <select id="venueStatus" v-model="editingVenue.status" required>
               <option value="ENABLE">사용 가능</option>
@@ -68,8 +70,11 @@
             </select>
           </div>
           <div class="button-group">
-            <button type="submit" class="submit-button">{{ isEditing ? '수정' : '등록' }}</button>
-            <button type="button" class="seat-button" @click="editSeats(editingVenue.placeId, editingVenue.name, editingVenue.maxSeat)">좌석 수정</button>
+            <button class="submit-button" type="submit">{{ isEditing ? '수정' : '등록' }}</button>
+            <button class="seat-button" type="button"
+                    @click="editSeats(editingVenue.placeId, editingVenue.name, editingVenue.maxSeat)">
+              좌석 수정
+            </button>
           </div>
         </form>
       </div>
@@ -78,7 +83,7 @@
 </template>
 
 <script>
-import {axiosAdminInstance, axiosInstance} from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 import {logoutAdminUser} from "@/utils.js";
 
 export default {
@@ -95,7 +100,7 @@ export default {
       hasNextPage: false,
       itemsPerPage: 4,
       showModal: false,
-      editingVenue: { id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE' },
+      editingVenue: {id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE'},
       isEditing: false
     }
   },
@@ -124,8 +129,8 @@ export default {
           params.status = this.searchStatus;
         }
 
-        const response = await axiosAdminInstance.get(`v1/places`, { params });
-        const { currentPage, totalPage, totalElements, hasNextPage, data } = response.data.data;
+        const response = await axiosAdminInstance.get(`v1/places`, {params});
+        const {currentPage, totalPage, totalElements, hasNextPage, data} = response.data.data;
         this.venues = data.map(venue => ({
           placeId: venue.placeId,
           location: venue.location,
@@ -149,7 +154,7 @@ export default {
     },
     editVenue(venue) {
       this.isEditing = true;
-      this.editingVenue = { ...venue };
+      this.editingVenue = {...venue};
       this.showModal = true;
     },
     changePage(page) {
@@ -158,17 +163,17 @@ export default {
     },
     showRegisterModal() {
       this.isEditing = false;
-      this.editingVenue = { id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE' };
+      this.editingVenue = {id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE'};
       this.showModal = true;
     },
     closeModal() {
       this.showModal = false;
-      this.editingVenue = { id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE' };
+      this.editingVenue = {id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE'};
     },
     async submitVenue() {
       try {
         if (this.isEditing) {
-          if(confirm("수정하시겠습니까?")){
+          if (confirm("수정하시겠습니까?")) {
             await axiosAdminInstance.patch(`/v1/places/${this.editingVenue.placeId}`, {
               location: this.editingVenue.location,
               name: this.editingVenue.name,
@@ -207,14 +212,15 @@ export default {
       }
     },
     async logout() {
-      const success = await logoutAdminUser();
+      const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     },
     editSeats(placeId, name, maxSeat) {
-      this.$router.push({ name:'SeatManage', query: {placeId:placeId, placeName:name, maxSeat:maxSeat}});
+      this.$router.push(
+          {name: 'SeatManage', query: {placeId: placeId, placeName: name, maxSeat: maxSeat}});
     }
   },
   created() {
@@ -223,4 +229,4 @@ export default {
 }
 </script>
 
-<style src="../../assets/css/placeManage.css" scoped></style>
+<style scoped src="../../assets/css/placeManage.css"></style>

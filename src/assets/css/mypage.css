@@ -1,0 +1,119 @@
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+header {
+  background-color: #4A148C;
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.user-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.user-actions button {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.user-actions button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile {
+  display: grid;
+  gap: 1rem;
+}
+
+.user-profile p {
+  font-size: 1.1rem;
+}
+
+button {
+  background-color: #4A148C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.25rem;
+}
+
+button:hover {
+  background-color: #6A1B9A;
+}
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 1rem 0;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

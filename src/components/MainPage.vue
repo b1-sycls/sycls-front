@@ -20,7 +20,7 @@
           </select>
         </div>
         <div class="search-bar">
-          <input type="text" v-model="titleKeyword" placeholder="검색할 콘서트 이름" />
+          <input v-model="titleKeyword" placeholder="검색할 콘서트 이름" type="text"/>
           <button @click="search">검색</button>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <h2>콘서트 목록</h2>
       <div class="concert-list">
         <div v-for="concert in concerts" :key="concert.contentId" class="concert-item">
-          <img :src="concert.mainImagePath" :alt="concert.title" class="concert-image" />
+          <img :alt="concert.title" :src="concert.mainImagePath" class="concert-image"/>
           <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
@@ -37,14 +37,19 @@
         </div>
       </div>
       <div class="pagination">
-        <button v-for="page in totalPagesArray" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+        <button :disabled="currentPageSet === 1" @click="prevPageSet">&lt;</button>
+        <button v-for="page in pageSet" :key="page" :class="{ active: currentPage === page }"
+                @click="changePage(page)">{{ page }}
+        </button>
+        <button :disabled="currentPageSet * 10 >= totalPages" @click="nextPageSet">&gt;</button>
       </div>
     </main>
   </div>
 </template>
+
 <script>
 import {axiosInstance} from "@/axios.js";
-import { logoutUser } from "@/utils.js";
+import {logoutUser} from "@/utils.js";
 
 export default {
   name: 'MainPage',
@@ -60,13 +65,18 @@ export default {
     };
   },
   computed: {
-    totalPagesArray() {
-      return Array.from({length: this.totalPages}, (_, i) => i + 1);
+    currentPageSet() {
+      return Math.ceil(this.currentPage / 10);
+    },
+    pageSet() {
+      const startPage = (this.currentPageSet - 1) * 10 + 1;
+      const endPage = Math.min(startPage + 9, this.totalPages);
+      return Array.from({length: endPage - startPage + 1}, (_, i) => startPage + i);
     }
   },
   methods: {
     viewConcert(concert) {
-      this.$router.push({ name: 'Concert', params: { id: concert.contentId } });
+      this.$router.push({name: 'Concert', params: {id: concert.contentId}});
     },
     changePage(pageNumber) {
       this.currentPage = pageNumber;
@@ -101,7 +111,6 @@ export default {
         this.totalPages = responseData.totalPage;
       })
       .catch(error => {
-
         console.error("콘텐츠를 가져오는 중에 오류가 발생했습니다.", error);
       });
     },
@@ -110,9 +119,21 @@ export default {
       this.isLoggedIn = !!token;
     },
     async logout() {
-      const success = await logoutUser();
+      const success = await logoutUser(true);
       if (success) {
         this.isLoggedIn = false;
+      }
+    },
+    prevPageSet() {
+      if (this.currentPageSet > 1) {
+        this.currentPage = (this.currentPageSet - 2) * 10 + 1;
+        this.fetchContents();
+      }
+    },
+    nextPageSet() {
+      if (this.currentPageSet * 10 < this.totalPages) {
+        this.currentPage = this.currentPageSet * 10 + 1;
+        this.fetchContents();
       }
     }
   },
@@ -129,4 +150,4 @@ export default {
 };
 </script>
 
-<style src="@/assets/css/main.css" scoped></style>
+<style scoped src="@/assets/css/main.css"></style>

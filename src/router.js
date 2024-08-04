@@ -20,13 +20,13 @@ const routes = [
         path: '/seat/manage',
         name: 'SeatManage',
         component: () => import('@/components/seat/SeatManage.vue'),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/seatgrade/seatgradeManage',
         name: 'SeatGradeManage',
         component: () => import('@/components/seat/SeatGradeManage.vue'),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/payment/checkout',
@@ -62,13 +62,13 @@ const routes = [
         path: '/place/placeManage',
         name: 'PlaceManage',
         component: () => import('@/components/place/PlaceManage.vue'),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/manage',
         name: 'ManageMainPage',
         component: () => import('@/components/ManageMainPage.vue'),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/manage/signup',
@@ -84,14 +84,25 @@ const routes = [
         path: '/manage/category',
         name: 'Category',
         component: () => import('@/components/category/Category.vue'),
-        meta: { requiresAuth: true }
+        meta: {requiresAuth: true}
     },
     {
         path: '/manage/concert/:id',
         name: 'ManageConcert',
         component: () => import('@/components/round/ManageConcert.vue'),
-        meta: { requiresAuth: true }
-    }
+        meta: {requiresAuth: true}
+    },
+    {
+        path: '/mypage',
+        name: 'MyPage',
+        component: () => import('@/components/user/MyPage.vue')
+    },
+    {
+        path: '/manage/mypage',
+        name: 'ManageMyPage',
+        component: () => import('@/components/user/ManageMyPage.vue'),
+        meta: {requiresAuth: true}
+    },
 ];
 
 export const router = createRouter({
