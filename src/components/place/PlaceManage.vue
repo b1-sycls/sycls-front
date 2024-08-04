@@ -1,6 +1,6 @@
 <template>
   <div class="nav-bar">
-    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+<!--    <router-link class="nav-button" to="/member-manage">회원관리</router-link>-->
     <router-link class="nav-button" to="/place/placeManage">공연관리</router-link>
     <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
     <button class="nav-button" @click="logout">로그아웃</button>
@@ -31,6 +31,11 @@
            @click="editVenue(venue)">
         <div class="venue-name">{{ venue.name }}</div>
         <div class="venue-address">{{ venue.location }}</div>
+        <div class="venue-status">
+          <span :class="{'status-enabled': venue.status === 'ENABLE', 'status-disabled': venue.status === 'DISABLE'}">
+            {{ venue.status === 'ENABLE' ? '활성화' : '비활성화' }}
+          </span>
+        </div>
         <button class="delete-button" @click.stop="deleteVenue(venue.placeId)">삭제</button>
       </div>
     </div>
@@ -82,6 +87,7 @@
   </div>
 </template>
 
+
 <script>
 import {axiosAdminInstance} from "@/axios.js";
 import {logoutAdminUser} from "@/utils.js";
@@ -98,7 +104,7 @@ export default {
       totalPage: 1,
       totalElements: 0,
       hasNextPage: false,
-      itemsPerPage: 4,
+      itemsPerPage: 8,
       showModal: false,
       editingVenue: {id: null, name: '', location: '', maxSeat: 0, status: 'ENABLE'},
       isEditing: false
@@ -106,8 +112,8 @@ export default {
   },
   computed: {
     paginatedVenues() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
+      const start = 0;
+      const end = 8;
       return this.venues.slice(start, end);
     },
     totalPages() {
@@ -139,7 +145,7 @@ export default {
           status: venue.status,
           createdAt: venue.createdAt
         }));
-        this.currentPage = currentPage; // Adjust to 1-based
+        this.currentPage = currentPage;
         this.totalPage = totalPage;
         this.totalElements = totalElements;
         this.hasNextPage = hasNextPage;
@@ -207,7 +213,7 @@ export default {
           alert('공연장이 삭제되었습니다.');
         } catch (error) {
           console.error('Error deleting venue:', error);
-          alert('공연장을 삭제하는 중 오류가 발생했습니다.');
+          alert(error.response?.data?.message || '공연장 삭제에 실패했습니다.');
         }
       }
     },
