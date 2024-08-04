@@ -82,26 +82,21 @@ export default {
       const seatRes = await this.fetchSeatInfo();
       const seatList = seatRes.seatList;
 
-      // 최대 행과 열 수를 추적
-      const maxRows = 26; // A-Z까지의 최대 행 수
-      const rowMap = {};
+      const layout = [];
 
       seatList.forEach(seat => {
         const rowIndex = seat.code.charCodeAt(0) - 65;
         const seatIndex = parseInt(seat.code.slice(1)) - 1;
 
-        if (!rowMap[rowIndex]) {
-          rowMap[rowIndex] = [];
+        if (!layout[rowIndex]) {
+          layout[rowIndex] = [];
         }
 
-        rowMap[rowIndex][seatIndex] = seat;
+        layout[rowIndex][seatIndex] = seat || {seatCode: 'N/A'};
       });
 
       // 빈 좌석 배열을 생성합니다.
-      this.seatLayout = Array.from({ length: maxRows }, (_, i) => {
-        const row = rowMap[i] || [];
-        return row.length > 0 ? row : row.fill(0);
-      });
+      this.seatLayout = layout.map(row => row.map(seat => seat || {seatCode: 'N/A'}));
 
       this.maxSeat = this.$route.query.maxSeat;
       this.seatCount = seatRes.totalSeats;
@@ -164,7 +159,7 @@ export default {
           return;
         }
         const placeId = this.$route.query.placeId;
-        await axiosAdminInstance.post(`/v1/places/${placeId}/seats`, { code: seatCode });
+        await axiosAdminInstance.post(`/v1/places/${placeId}/seats`, {code: seatCode});
         alert(`좌석 ${seatCode}가 추가되었습니다.`);
       } catch (error) {
         alert(error.response.data.message);
@@ -174,7 +169,8 @@ export default {
     },
     async modifySeat(seatId, seatCode) {
       try {
-        await axiosAdminInstance.patch(`/v1/seats/${seatId}`, { placeId: this.$route.query.placeId, code: seatCode });
+        await axiosAdminInstance.patch(`/v1/seats/${seatId}`,
+            {placeId: this.$route.query.placeId, code: seatCode});
         alert(`좌석 ${seatCode}가 수정되었습니다.`);
       } catch (error) {
         alert(error.response.data.message);
@@ -197,7 +193,7 @@ export default {
       const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     },
     handleDelete() {
