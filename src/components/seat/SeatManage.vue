@@ -1,9 +1,8 @@
 <template>
   <div class="nav-bar">
-    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
-    <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
+    <!--    <router-link class="nav-button" to="/member-manage">회원관리</router-link>-->
+    <router-link class="nav-button" to="/place/placeManage">공연관리</router-link>
     <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
-    <router-link class="nav-button" to="/manage">공연관리</router-link>
     <button class="nav-button" @click="logout">로그아웃</button>
   </div>
   <div id="app" class="container">
@@ -15,8 +14,7 @@
       <div id="seats">
         <div v-for="(row, rowIndex) in seatLayout" :key="rowIndex" class="row">
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
-            <div v-if="seat === 0" class="spacer"></div>
-            <div v-else
+            <div v-if="seat"
                  :class="{ selected: isSelected(seat.code), unavailable: seat.status !== 'ENABLE' }"
                  class="seat"
                  @click="toggleSeat(seat)">
@@ -55,9 +53,11 @@
   </div>
 </template>
 
+
+
 <script>
-import {axiosAdminInstance} from "@/axios.js";
-import {logoutAdminUser} from "@/utils.js";
+import { axiosAdminInstance } from "@/axios.js";
+import { logoutAdminUser } from "@/utils.js";
 
 export default {
   name: 'Seat',
@@ -82,28 +82,35 @@ export default {
       const seatRes = await this.fetchSeatInfo();
       const seatList = seatRes.seatList;
 
-      // 좌석 배열을 좌석 코드에 따라 배치
-      const layout = [];
+      // 최대 행과 열 수를 추적
+      const maxRows = 26; // A-Z까지의 최대 행 수
+      const rowMap = {};
+
       seatList.forEach(seat => {
         const rowIndex = seat.code.charCodeAt(0) - 65;
         const seatIndex = parseInt(seat.code.slice(1)) - 1;
 
-        if (!layout[rowIndex]) {
-          layout[rowIndex] = [];
+        if (!rowMap[rowIndex]) {
+          rowMap[rowIndex] = [];
         }
 
-        layout[rowIndex][seatIndex] = seat;
+        rowMap[rowIndex][seatIndex] = seat;
       });
 
-      this.seatLayout = layout.map(row => row.map(seat => seat ? seat : 0));
+      // 빈 좌석 배열을 생성합니다.
+      this.seatLayout = Array.from({ length: maxRows }, (_, i) => {
+        const row = rowMap[i] || [];
+        return row.length > 0 ? row : row.fill(0);
+      });
+
       this.maxSeat = this.$route.query.maxSeat;
       this.seatCount = seatRes.totalSeats;
     },
     isSelected(code) {
-      return this.selectedSeat && this.selectedSeat.code === code.toString();
+      return this.selectedSeat && this.selectedSeat.code === (code || '').toString();
     },
     toggleSeat(seat) {
-      if (seat.status === 'ENABLE') {
+      if (seat && seat.status === 'ENABLE') {
         if (!this.selectedSeat || this.selectedSeat.code !== seat.code) {
           this.selectedSeat = seat;
         } else {
@@ -157,7 +164,7 @@ export default {
           return;
         }
         const placeId = this.$route.query.placeId;
-        await axiosAdminInstance.post(`/v1/places/${placeId}/seats`, {code: seatCode});
+        await axiosAdminInstance.post(`/v1/places/${placeId}/seats`, { code: seatCode });
         alert(`좌석 ${seatCode}가 추가되었습니다.`);
       } catch (error) {
         alert(error.response.data.message);
@@ -167,8 +174,7 @@ export default {
     },
     async modifySeat(seatId, seatCode) {
       try {
-        await axiosAdminInstance.patch(`/v1/seats/${seatId}`,
-            {placeId: this.$route.query.placeId, code: seatCode});
+        await axiosAdminInstance.patch(`/v1/seats/${seatId}`, { placeId: this.$route.query.placeId, code: seatCode });
         alert(`좌석 ${seatCode}가 수정되었습니다.`);
       } catch (error) {
         alert(error.response.data.message);
@@ -191,7 +197,7 @@ export default {
       const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({name: 'ManageLogin'});
+        this.$router.push({ name: 'ManageLogin' });
       }
     },
     handleDelete() {

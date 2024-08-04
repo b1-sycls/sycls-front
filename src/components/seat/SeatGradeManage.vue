@@ -1,6 +1,5 @@
 <template>
   <div class="nav-bar">
-    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
     <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
     <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
     <router-link class="nav-button" to="/manage">공연관리</router-link>
@@ -14,10 +13,10 @@
     <div class="seating-chart">
       <div class="row">무대</div>
       <div id="seats">
-        <div v-for="(row, rowIndex) in seatLayout" :key="rowIndex" class="row">
+        <div v-for="(row, rowIndex) in seatLayout" :key="rowIndex" class="seat-row">
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
             <div v-if="seat === 0" class="spacer"></div>
-            <div v-else
+            <div v-else-if="seat && seat.seatCode"
                  :class="{ selected: isSelected(seat.seatCode), unavailable: seat.seatGradeStatus && seat.seatGradeStatus !== 'ENABLE' }"
                  class="seat"
                  @click="toggleSeat(seat)">
@@ -74,8 +73,8 @@
 </template>
 
 <script>
-import {axiosAdminInstance} from "@/axios.js";
-import {logoutAdminUser} from "@/utils.js";
+import { axiosAdminInstance } from "@/axios.js";
+import { logoutAdminUser } from "@/utils.js";
 
 export default {
   name: 'SeatGradeManage',
@@ -101,7 +100,7 @@ export default {
     async fetchSeatGrades() {
       const roundId = this.$route.query.roundId;
       const response = await axiosAdminInstance.get(`/v1/seat-grades`, {
-        params: {roundId: roundId}
+        params: { roundId: roundId }
       });
       return response.data.data;
     },
@@ -123,25 +122,19 @@ export default {
         const seatGradeInfo = seatGradesList.find(grade => grade.seatId === seat.seatId);
         const seatWithGrade = {...seat, ...seatGradeInfo};
 
-        layout[rowIndex][seatIndex] = seatWithGrade;
+        layout[rowIndex][seatIndex] = seatWithGrade || { seatCode: 'N/A' }; // 빈 객체로 초기화
       });
 
-      this.seatLayout = layout.map(row => row.map(seat => seat ? seat : 0));
+      this.seatLayout = layout.map(row => row.map(seat => seat || { seatCode: 'N/A' }));
       this.maxSeat = this.$route.query.maxSeat;
-      this.seatCount = seatGradesList.filter(
-          seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
+      this.seatCount = seatGradesList.filter(seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
     },
     isSelected(code) {
-      if (code === undefined || code === null) {
-        return false;
-      }
-      return this.selectedSeat && this.selectedSeat.seatCode === code.toString();
+      return this.selectedSeat && this.selectedSeat.seatCode === code;
     },
     toggleSeat(seat) {
-      if (!this.selectedSeat || this.selectedSeat.seatCode !== seat.seatCode) {
-        this.selectedSeat = seat;
-      } else {
-        this.selectedSeat = null;
+      if (seat && seat.seatCode) {
+        this.selectedSeat = this.selectedSeat && this.selectedSeat.seatCode === seat.seatCode ? null : seat;
       }
     },
     showModal(action) {
@@ -168,21 +161,18 @@ export default {
       const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({name: 'ManageLogin'});
+        this.$router.push({ name: 'ManageLogin' });
       }
     },
     async handleModalAction() {
-      // Ensure modalSeatGrade and modalSeatPrice are strings
       const seatGrade = this.modalSeatGrade;
       const seatPrice = this.modalSeatPrice;
 
-      // Check if seatGrade is empty
       if (!seatGrade) {
         alert('좌석 등급을 선택해주세요.');
         return;
       }
 
-      // Check if seatPrice is empty
       if (!seatPrice) {
         alert('좌석 가격을 입력해주세요.');
         return;
@@ -263,8 +253,7 @@ export default {
     },
     async handleCompleteGrades() {
       try {
-        // 좌석 등급 설정 완료 처리 로직
-        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */});
+        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */ });
         alert('좌석 등급 설정이 완료되었습니다.');
         await this.main();
       } catch (error) {
@@ -274,8 +263,9 @@ export default {
   },
   async mounted() {
     await this.main();
+    console.log('Seat Layout:', this.seatLayout); // 데이터 구조를 확인합니다.
   }
 };
 </script>
 
-<style scoped src="../../assets/css/seatGradeManage.css"></style>
+<style src="../../assets/css/seatGradeManage.css" scoped></style>
