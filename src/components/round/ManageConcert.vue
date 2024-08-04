@@ -370,7 +370,8 @@ export default {
           placeId: placeId,
           maxSeat: maxSeat,
           contentTitle: this.concert.title, // 필요 시 추가적인 정보
-          startDate: this.selectedShow.startDate
+          startDate: `${this.selectedShow.startDate} (${this.formatDay(
+              new Date(this.selectedShow.startDate))}) ${this.selectedShow.startTime}`
         }
       });
     },
@@ -382,6 +383,7 @@ export default {
         status: this.selectedShow.status
       })
       .then(response => {
+        // TODO 모달창에서 스테이스터스를 선택하면 그 상태가 페이지에보여짐 근데 서버에서 error 를 보내면 새로고침해야 제대로 된 상태가 나옴
         this.fetchConcertDetails();
         this.selectShow(this.selectedShow);  // 상태 변경 후 해당 회차를 선택하여 최신화
         this.closeStatusModal();
