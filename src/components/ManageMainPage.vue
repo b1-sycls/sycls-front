@@ -3,12 +3,10 @@
     <header>
       <div class="logo">에티켓(everyTicket) 공연관리 페이지</div>
       <div class="user-actions">
-        <router-link to="/member-manage" class="nav-button">회원관리</router-link>
+        <!--TODO 나중에 기능 구현되어있으면 그때 추가-->
+        <!--<router-link to="/member-manage" class="nav-button">회원관리</router-link>-->
         <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
         <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
-        <!--TODO 나중에 로그인안되어있으면 로그인페이지로 튕기게하고 로그인과 회원가입 페이지는 삭제예정-->
-        <router-link v-if="!isLoggedIn" to="/manage/login">로그인</router-link>
-        <router-link v-if="!isLoggedIn" to="/manage/signup">회원가입</router-link>
         <button v-if="isLoggedIn" class="styled-button" @click="logout">로그아웃</button>
         <router-link v-if="isLoggedIn" to="/manage/mypage">마이페이지</router-link>
       </div>
@@ -45,9 +43,9 @@
         </div>
       </div>
       <div class="pagination">
-        <button v-for="page in totalPagesArray" :key="page" @click="changePage(page)"
-                :class="{ active: currentPage === page }">{{ page }}
-        </button>
+        <button @click="prevPageSet" :disabled="currentPageSet === 1">&lt;</button>
+        <button v-for="page in pageSet" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+        <button @click="nextPageSet" :disabled="currentPageSet * 10 >= totalPages">&gt;</button>
       </div>
     </main>
 
@@ -160,8 +158,8 @@
 </template>
 
 <script>
-import {axiosAdminInstance} from "@/axios.js";
-import {logoutAdminUser} from "@/utils.js";
+import { axiosAdminInstance } from "@/axios.js";
+import { logoutAdminUser } from "@/utils.js";
 
 export default {
   name: 'MainPage',
@@ -192,8 +190,13 @@ export default {
     };
   },
   computed: {
-    totalPagesArray() {
-      return Array.from({length: this.totalPages}, (_, i) => i + 1);
+    currentPageSet() {
+      return Math.ceil(this.currentPage / 10);
+    },
+    pageSet() {
+      const startPage = (this.currentPageSet - 1) * 10 + 1;
+      const endPage = Math.min(startPage + 9, this.totalPages);
+      return Array.from({length: endPage - startPage + 1}, (_, i) => startPage + i);
     }
   },
   methods: {
@@ -217,6 +220,18 @@ export default {
       this.currentPage = pageNumber;
       this.fetchContents();
     },
+    prevPageSet() {
+      if (this.currentPageSet > 1) {
+        this.currentPage = (this.currentPageSet - 2) * 10 + 1;
+        this.fetchContents();
+      }
+    },
+    nextPageSet() {
+      if (this.currentPageSet * 10 < this.totalPages) {
+        this.currentPage = this.currentPageSet * 10 + 1;
+        this.fetchContents();
+      }
+    },
     search() {
       this.currentPage = 1;
       this.fetchContents();
@@ -232,7 +247,7 @@ export default {
       });
     },
     viewRound(concert) {
-      this.$router.push({ name: 'ManageConcert', params: { id: concert.contentId } });
+      this.$router.push({name: 'ManageConcert', params: {id: concert.contentId}});
     },
     fetchContents() {
       const categoryId = this.selectedCategory === '전체' ? null : this.selectedCategory;
@@ -262,7 +277,7 @@ export default {
       const success = await logoutAdminUser();
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     },
     openAddConcertModal() {

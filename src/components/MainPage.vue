@@ -37,13 +37,16 @@
         </div>
       </div>
       <div class="pagination">
-        <button v-for="page in totalPagesArray" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+        <button @click="prevPageSet" :disabled="currentPageSet === 1">&lt;</button>
+        <button v-for="page in pageSet" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+        <button @click="nextPageSet" :disabled="currentPageSet * 10 >= totalPages">&gt;</button>
       </div>
     </main>
   </div>
 </template>
+
 <script>
-import {axiosInstance} from "@/axios.js";
+import { axiosInstance } from "@/axios.js";
 import { logoutUser } from "@/utils.js";
 
 export default {
@@ -60,8 +63,13 @@ export default {
     };
   },
   computed: {
-    totalPagesArray() {
-      return Array.from({length: this.totalPages}, (_, i) => i + 1);
+    currentPageSet() {
+      return Math.ceil(this.currentPage / 10);
+    },
+    pageSet() {
+      const startPage = (this.currentPageSet - 1) * 10 + 1;
+      const endPage = Math.min(startPage + 9, this.totalPages);
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     }
   },
   methods: {
@@ -101,7 +109,6 @@ export default {
         this.totalPages = responseData.totalPage;
       })
       .catch(error => {
-
         console.error("콘텐츠를 가져오는 중에 오류가 발생했습니다.", error);
       });
     },
@@ -113,6 +120,18 @@ export default {
       const success = await logoutUser();
       if (success) {
         this.isLoggedIn = false;
+      }
+    },
+    prevPageSet() {
+      if (this.currentPageSet > 1) {
+        this.currentPage = (this.currentPageSet - 2) * 10 + 1;
+        this.fetchContents();
+      }
+    },
+    nextPageSet() {
+      if (this.currentPageSet * 10 < this.totalPages) {
+        this.currentPage = this.currentPageSet * 10 + 1;
+        this.fetchContents();
       }
     }
   },
