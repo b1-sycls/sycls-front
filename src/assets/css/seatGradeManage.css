@@ -71,6 +71,13 @@ button.nav-button:hover {
   margin-bottom: 5px;
 }
 
+.seat-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
 .seat {
   width: 20px;
   height: 20px;

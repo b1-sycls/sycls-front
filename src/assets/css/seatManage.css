@@ -65,6 +65,7 @@ button.nav-button:hover {
   margin-bottom: 5px;
 }
 
+/* 기존 CSS */
 .seat {
   width: 20px;
   height: 20px;
@@ -89,6 +90,9 @@ button.nav-button:hover {
   color: white;
   cursor: not-allowed;
 }
+
+/* 비어있는 좌석에 대한 스타일은 제거 */
+
 
 .console {
   text-align: center;
