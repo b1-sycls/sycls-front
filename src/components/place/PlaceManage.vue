@@ -1,7 +1,7 @@
 <template>
   <div class="nav-bar">
     <router-link class="nav-button" to="/member-manage">회원관리</router-link>
-    <router-link class="nav-button" to="/place/placeManage">공연관리</router-link>
+    <router-link class="nav-button" to="/manage">공연관리</router-link>
     <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
     <button class="nav-button" @click="logout">로그아웃</button>
   </div>

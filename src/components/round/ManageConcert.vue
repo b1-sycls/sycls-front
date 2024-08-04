@@ -2,19 +2,20 @@
   <div class="container">
     <h1>{{ concert.title }}</h1>
     <div class="concert-info">
-      <img :src="concert.mainImage" :alt="concert.title + ' 메인 이미지'" class="main-image" width="800" height="533">
+      <img :alt="concert.title + ' 메인 이미지'" :src="concert.mainImage" class="main-image" height="533"
+           width="800">
 
       <div class="custom-slider">
-        <button @click="prevSlide" class="slider-button prev-button">&#10094;</button>
+        <button class="slider-button prev-button" @click="prevSlide">&#10094;</button>
         <div class="slider-images">
           <img v-for="(image, index) in concert.subImages"
                :key="index"
-               :src="image"
                :alt="concert.title + ' 서브 이미지 ' + (index + 1)"
-               class="slider-image"
-               :class="{ active: currentIndex === index }">
+               :class="{ active: currentIndex === index }"
+               :src="image"
+               class="slider-image">
         </div>
-        <button @click="nextSlide" class="slider-button next-button">&#10095;</button>
+        <button class="slider-button next-button" @click="nextSlide">&#10095;</button>
       </div>
 
       <p>{{ concert.description }}</p>
@@ -27,37 +28,42 @@
         <h2>공연 날짜</h2>
         <ul>
           <li v-for="show in concert.shows" :key="show.roundId"
-              @click="selectShow(show)"
-              :class="{ selected: selectedShow === show }">
+              :class="{ selected: selectedShow === show }"
+              @click="selectShow(show)">
             {{ show.startDate }} ({{ formatDay(new Date(show.startDate)) }})
           </li>
         </ul>
       </div>
-      <div class="show-details" v-if="selectedShow">
+      <div v-if="selectedShow" class="show-details">
         <h2>상세 정보</h2>
         <p><strong>시간:</strong> {{ selectedShow.startTime }} ~ {{ selectedShow.endTime }}</p>
         <p><strong>공연장:</strong> {{ selectedShow.placeName }} </p>
         <p><strong>위치:</strong> {{ selectedShow.placeLocation }}</p>
         <p><strong>회차상태:</strong> {{ selectedShow.status }}</p>
         <div class="performers-slider">
-          <button @click="prevPerformerSlide" class="performer-slider-button prev-button">&#10094;</button>
-          <div class="performers-images" :style="{ transform: `translateX(-${performerIndex * 100}%)` }">
-            <div v-for="(performer, index) in performers" :key="performer.castId" class="performer-slide">
-              <img :src="performer.imagePath" :alt="performer.name" class="performer-image">
+          <button class="performer-slider-button prev-button" @click="prevPerformerSlide">&#10094;
+          </button>
+          <div :style="{ transform: `translateX(-${performerIndex * 100}%)` }"
+               class="performers-images">
+            <div v-for="(performer, index) in performers" :key="performer.castId"
+                 class="performer-slide">
+              <img :alt="performer.name" :src="performer.imagePath" class="performer-image">
               <p>{{ performer.name }}</p>
               <p>상태: {{ performer.status }}</p>
               <button class="book-button" @click="openEditPerformerModal(performer)">출연진 수정</button>
             </div>
           </div>
-          <button @click="nextPerformerSlide" class="performer-slider-button next-button">&#10095;</button>
+          <button class="performer-slider-button next-button" @click="nextPerformerSlide">&#10095;
+          </button>
         </div>
         <button class="book-button" @click="openEditRoundModal(selectedShow)">회차 수정</button>
         <button class="book-button" @click="openStatusModal(selectedShow)">회차 상태변경</button>
+        <button class="book-button" @click="openAddSeatGrade">좌석 등급 설정</button>
         <button class="book-button" @click="openAddPerformerModal">출연진 추가</button>
       </div>
     </div>
 
-    <button @click="openAddRoundModal" class="book-button">회차 추가</button>
+    <button class="book-button" @click="openAddRoundModal">회차 추가</button>
 
     <!--TODO 시간창 00:00 ~ 24:00 으로 바꼈으면 좋겠음-->
     <!-- Add Round Modal -->
@@ -67,20 +73,20 @@
         <h3>회차 추가</h3>
         <form @submit.prevent="addRound">
           <label for="place">공연장:</label>
-          <select v-model="newRound.placeId" id="place" required>
+          <select id="place" v-model="newRound.placeId" required>
             <option v-for="place in places" :key="place.placeId" :value="place.placeId">
               {{ place.name }} ({{ place.location }})
             </option>
           </select>
           <label for="sequence">회차:</label>
-          <input type="number" v-model="newRound.sequence" id="sequence" required />
+          <input id="sequence" v-model="newRound.sequence" required type="number"/>
           <label for="startDate">시작 날짜:</label>
-          <input type="date" v-model="newRound.startDate" id="startDate" required />
+          <input id="startDate" v-model="newRound.startDate" required type="date"/>
           <label for="startTime">시작 시간:</label>
-          <input type="time" v-model="newRound.startTime" id="startTime" required />
+          <input id="startTime" v-model="newRound.startTime" required type="time"/>
           <label for="endTime">종료 시간:</label>
-          <input type="time" v-model="newRound.endTime" id="endTime" required />
-          <button type="submit" class="book-button">추가</button>
+          <input id="endTime" v-model="newRound.endTime" required type="time"/>
+          <button class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -93,18 +99,18 @@
         <h3>회차 수정</h3>
         <form @submit.prevent="updateRound">
           <label for="editPlace">공연장:</label>
-          <select v-model="selectedShow.placeId" id="editPlace" required>
+          <select id="editPlace" v-model="selectedShow.placeId" required>
             <option v-for="place in places" :key="place.placeId" :value="place.placeId">
               {{ place.name }} ({{ place.location }})
             </option>
           </select>
           <label for="editStartDate">시작 날짜:</label>
-          <input type="date" v-model="selectedShow.startDate" id="editStartDate" required />
+          <input id="editStartDate" v-model="selectedShow.startDate" required type="date"/>
           <label for="editStartTime">시작 시간:</label>
-          <input type="time" v-model="selectedShow.startTime" id="editStartTime" required />
+          <input id="editStartTime" v-model="selectedShow.startTime" required type="time"/>
           <label for="editEndTime">종료 시간:</label>
-          <input type="time" v-model="selectedShow.endTime" id="editEndTime" required />
-          <button type="submit" class="book-button">수정</button>
+          <input id="editEndTime" v-model="selectedShow.endTime" required type="time"/>
+          <button class="book-button" type="submit">수정</button>
         </form>
       </div>
     </div>
@@ -116,12 +122,12 @@
         <h3>회차 상태변경</h3>
         <form @submit.prevent="updateRoundStatus">
           <label for="status">상태:</label>
-          <select v-model="selectedShow.status" id="status" required>
+          <select id="status" v-model="selectedShow.status" required>
             <option value="WAITING">WAITING</option>
             <option value="AVAILABLE">AVAILABLE</option>
             <option value="CLOSED">CLOSED</option>
           </select>
-          <button type="submit" class="book-button">변경</button>
+          <button class="book-button" type="submit">변경</button>
         </form>
       </div>
     </div>
@@ -133,10 +139,10 @@
         <h3>출연진 추가</h3>
         <form @submit.prevent="addPerformer">
           <label for="performerName">출연진 이름:</label>
-          <input type="text" v-model="newPerformer.name" id="performerName" required />
+          <input id="performerName" v-model="newPerformer.name" required type="text"/>
           <label for="performerImage">출연진 이미지:</label>
-          <input type="file" @change="handlePerformerImageUpload" id="performerImage" required />
-          <button type="submit" class="book-button">추가</button>
+          <input id="performerImage" required type="file" @change="handlePerformerImageUpload"/>
+          <button class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -148,15 +154,15 @@
         <h3>출연진 수정</h3>
         <form @submit.prevent="updatePerformer">
           <label for="editPerformerName">출연진 이름:</label>
-          <input type="text" v-model="selectedPerformer.name" id="editPerformerName" required />
+          <input id="editPerformerName" v-model="selectedPerformer.name" required type="text"/>
           <label for="editPerformerStatus">출연진 상태:</label>
-          <select v-model="selectedPerformer.status" id="editPerformerStatus" required>
+          <select id="editPerformerStatus" v-model="selectedPerformer.status" required>
             <option value="SCHEDULED">SCHEDULED</option>
             <option value="CANCELED">CANCELED</option>
           </select>
           <label for="editPerformerImage">출연진 이미지:</label>
-          <input type="file" @change="handleEditPerformerImageUpload" id="editPerformerImage" />
-          <button type="submit" class="book-button">수정</button>
+          <input id="editPerformerImage" type="file" @change="handleEditPerformerImageUpload"/>
+          <button class="book-button" type="submit">수정</button>
         </form>
       </div>
     </div>
@@ -164,7 +170,7 @@
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 
 export default {
   props: ['contentId'],
@@ -218,7 +224,8 @@ export default {
         this.concert.subImages = data.detailImageList.map(img => img.detailImagePath);
         this.concert.description = data.description;
         this.concert.category = data.categoryName;
-        this.concert.date = `${data.roundList[0].startDate} - ${data.roundList[data.roundList.length - 1].startDate}`;
+        this.concert.date = `${data.roundList[0].startDate} - ${data.roundList[data.roundList.length
+        - 1].startDate}`;
         this.concert.shows = data.roundList;
       })
       .catch(error => {
@@ -234,7 +241,7 @@ export default {
       .then(response => {
         this.performers = response.data.data;
         // 캐시에 저장
-        this.performersCache = { ...this.performersCache, [roundId]: response.data.data };
+        this.performersCache = {...this.performersCache, [roundId]: response.data.data};
       })
       .catch(error => {
         console.error("출연진 정보를 가져오는 중에 오류가 발생했습니다.", error);
@@ -254,7 +261,7 @@ export default {
       .then(response => {
         this.performers = response.data.data;
         // 캐시에 저장
-        this.performersCache = { ...this.performersCache, [roundId]: response.data.data };
+        this.performersCache = {...this.performersCache, [roundId]: response.data.data};
       })
       .catch(error => {
         console.error("출연진 정보를 가져오는 중에 오류가 발생했습니다.", error);
@@ -266,16 +273,20 @@ export default {
       this.fetchPerformers(show.roundId);
     },
     prevSlide() {
-      this.currentIndex = (this.currentIndex === 0) ? this.concert.subImages.length - 1 : this.currentIndex - 1;
+      this.currentIndex = (this.currentIndex === 0) ? this.concert.subImages.length - 1
+          : this.currentIndex - 1;
     },
     nextSlide() {
-      this.currentIndex = (this.currentIndex === this.concert.subImages.length - 1) ? 0 : this.currentIndex + 1;
+      this.currentIndex = (this.currentIndex === this.concert.subImages.length - 1) ? 0
+          : this.currentIndex + 1;
     },
     prevPerformerSlide() {
-      this.performerIndex = (this.performerIndex === 0) ? this.performers.length - 1 : this.performerIndex - 1;
+      this.performerIndex = (this.performerIndex === 0) ? this.performers.length - 1
+          : this.performerIndex - 1;
     },
     nextPerformerSlide() {
-      this.performerIndex = (this.performerIndex === this.performers.length - 1) ? 0 : this.performerIndex + 1;
+      this.performerIndex = (this.performerIndex === this.performers.length - 1) ? 0
+          : this.performerIndex + 1;
     },
     formatDay(date) {
       const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
@@ -311,7 +322,7 @@ export default {
       });
     },
     openEditRoundModal(show) {
-      this.selectedShow = { ...show };
+      this.selectedShow = {...show};
       this.showEditRoundModal = true;
       this.fetchPlaces();
     },
@@ -320,8 +331,10 @@ export default {
     },
     updateRound() {
       // 시간 값을 초 단위 없이 포맷팅
-      const startTimeFormatted = this.selectedShow.startTime.length === 5 ? this.selectedShow.startTime : this.selectedShow.startTime.slice(0, 5);
-      const endTimeFormatted = this.selectedShow.endTime.length === 5 ? this.selectedShow.endTime : this.selectedShow.endTime.slice(0, 5);
+      const startTimeFormatted = this.selectedShow.startTime.length === 5
+          ? this.selectedShow.startTime : this.selectedShow.startTime.slice(0, 5);
+      const endTimeFormatted = this.selectedShow.endTime.length === 5 ? this.selectedShow.endTime
+          : this.selectedShow.endTime.slice(0, 5);
 
       axiosAdminInstance.patch(`/v1/rounds/${this.selectedShow.roundId}`, {
         placeId: this.selectedShow.placeId,
@@ -342,8 +355,24 @@ export default {
       });
     },
     openStatusModal(show) {
-      this.selectedShow = { ...show };
+      this.selectedShow = {...show};
       this.showStatusModal = true;
+    },
+    openAddSeatGrade() {
+      const roundId = this.selectedShow.roundId;
+      const placeId = this.selectedShow.placeId;
+      const maxSeat = this.selectedShow.placeMaxSeat; // 예: 최대 좌석 수가 concert 객체에 있다고 가정
+
+      this.$router.push({
+        name: 'SeatGradeManage',
+        query: {
+          roundId: roundId,
+          placeId: placeId,
+          maxSeat: maxSeat,
+          contentTitle: this.concert.title, // 필요 시 추가적인 정보
+          startDate: this.selectedShow.startDate
+        }
+      });
     },
     closeStatusModal() {
       this.showStatusModal = false;
@@ -377,7 +406,7 @@ export default {
       const dtoBlob = new Blob([JSON.stringify({
         name: this.newPerformer.name,
         roundId: this.selectedShow.roundId
-      })], { type: 'application/json' });
+      })], {type: 'application/json'});
 
       formData.append('dto', dtoBlob);
       formData.append('image', this.newPerformer.image);
@@ -398,7 +427,7 @@ export default {
       });
     },
     openEditPerformerModal(performer) {
-      this.selectedPerformer = { ...performer };
+      this.selectedPerformer = {...performer};
       this.showEditPerformerModal = true;
     },
     closeEditPerformerModal() {
@@ -442,4 +471,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/concert.css" scoped></style>
+<style scoped src="../../assets/css/concert.css"></style>
