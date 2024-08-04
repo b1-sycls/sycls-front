@@ -1,10 +1,10 @@
 <template>
   <div class="nav-bar">
-    <router-link to="/member-manage" class="nav-button">회원관리</router-link>
-    <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
-    <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
-    <router-link to="/manage" class="nav-button">공연관리</router-link>
-    <button @click="logout" class="nav-button">로그아웃</button>
+    <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+    <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
+    <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
+    <router-link class="nav-button" to="/manage">공연관리</router-link>
+    <button class="nav-button" @click="logout">로그아웃</button>
   </div>
   <div id="app" class="container">
     <div class="header">
@@ -17,8 +17,8 @@
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
             <div v-if="seat === 0" class="spacer"></div>
             <div v-else
-                 class="seat"
                  :class="{ selected: isSelected(seat.code), unavailable: seat.status !== 'ENABLE' }"
+                 class="seat"
                  @click="toggleSeat(seat)">
               {{ seat.code }}
             </div>
@@ -45,7 +45,7 @@
       <div class="modal-content">
         <h3>좌석 {{ modalAction }}하기</h3>
         <label for="seatCode">좌석 코드:</label>
-        <input id="seatCode" v-model="modalSeatCode" placeholder="좌석 코드를 입력하세요" />
+        <input id="seatCode" v-model="modalSeatCode" placeholder="좌석 코드를 입력하세요"/>
         <div class="modal-buttons">
           <button class="button" @click="handleModalAction">확인</button>
           <button class="button" @click="closeModal">취소</button>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
+import {axiosAdminInstance} from "@/axios.js";
 import {logoutAdminUser} from "@/utils.js";
 
 export default {
@@ -167,7 +167,8 @@ export default {
     },
     async modifySeat(seatId, seatCode) {
       try {
-        await axiosAdminInstance.patch(`/v1/seats/${seatId}`, {placeId: this.$route.query.placeId, code: seatCode});
+        await axiosAdminInstance.patch(`/v1/seats/${seatId}`,
+            {placeId: this.$route.query.placeId, code: seatCode});
         alert(`좌석 ${seatCode}가 수정되었습니다.`);
       } catch (error) {
         alert(error.response.data.message);
@@ -187,10 +188,10 @@ export default {
       await this.main();
     },
     async logout() {
-      const success = await logoutAdminUser();
+      const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     },
     handleDelete() {
@@ -210,4 +211,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/seatManage.css" scoped></style>
+<style scoped src="../../assets/css/seatManage.css"></style>

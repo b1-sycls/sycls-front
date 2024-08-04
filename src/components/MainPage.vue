@@ -20,7 +20,7 @@
           </select>
         </div>
         <div class="search-bar">
-          <input type="text" v-model="titleKeyword" placeholder="검색할 콘서트 이름" />
+          <input v-model="titleKeyword" placeholder="검색할 콘서트 이름" type="text"/>
           <button @click="search">검색</button>
         </div>
       </div>
@@ -29,7 +29,7 @@
       <h2>콘서트 목록</h2>
       <div class="concert-list">
         <div v-for="concert in concerts" :key="concert.contentId" class="concert-item">
-          <img :src="concert.mainImagePath" :alt="concert.title" class="concert-image" />
+          <img :alt="concert.title" :src="concert.mainImagePath" class="concert-image"/>
           <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
@@ -37,17 +37,19 @@
         </div>
       </div>
       <div class="pagination">
-        <button @click="prevPageSet" :disabled="currentPageSet === 1">&lt;</button>
-        <button v-for="page in pageSet" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-        <button @click="nextPageSet" :disabled="currentPageSet * 10 >= totalPages">&gt;</button>
+        <button :disabled="currentPageSet === 1" @click="prevPageSet">&lt;</button>
+        <button v-for="page in pageSet" :key="page" :class="{ active: currentPage === page }"
+                @click="changePage(page)">{{ page }}
+        </button>
+        <button :disabled="currentPageSet * 10 >= totalPages" @click="nextPageSet">&gt;</button>
       </div>
     </main>
   </div>
 </template>
 
 <script>
-import { axiosInstance } from "@/axios.js";
-import { logoutUser } from "@/utils.js";
+import {axiosInstance} from "@/axios.js";
+import {logoutUser} from "@/utils.js";
 
 export default {
   name: 'MainPage',
@@ -69,12 +71,12 @@ export default {
     pageSet() {
       const startPage = (this.currentPageSet - 1) * 10 + 1;
       const endPage = Math.min(startPage + 9, this.totalPages);
-      return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+      return Array.from({length: endPage - startPage + 1}, (_, i) => startPage + i);
     }
   },
   methods: {
     viewConcert(concert) {
-      this.$router.push({ name: 'Concert', params: { id: concert.contentId } });
+      this.$router.push({name: 'Concert', params: {id: concert.contentId}});
     },
     changePage(pageNumber) {
       this.currentPage = pageNumber;
@@ -117,7 +119,7 @@ export default {
       this.isLoggedIn = !!token;
     },
     async logout() {
-      const success = await logoutUser();
+      const success = await logoutUser(true);
       if (success) {
         this.isLoggedIn = false;
       }
@@ -148,4 +150,4 @@ export default {
 };
 </script>
 
-<style src="@/assets/css/main.css" scoped></style>
+<style scoped src="@/assets/css/main.css"></style>

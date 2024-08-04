@@ -5,8 +5,8 @@
       <div class="user-actions">
         <!--TODO 나중에 기능 구현되어있으면 그때 추가-->
         <!--<router-link to="/member-manage" class="nav-button">회원관리</router-link>-->
-        <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
-        <router-link to="/manage/category" class="nav-button">카테고리관리</router-link>
+        <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
+        <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
         <button v-if="isLoggedIn" class="styled-button" @click="logout">로그아웃</button>
         <router-link v-if="isLoggedIn" to="/manage/mypage">마이페이지</router-link>
       </div>
@@ -22,8 +22,8 @@
           </select>
         </div>
         <div class="search-bar">
-          <input type="text" v-model="titleKeyword" placeholder="검색할 콘서트 이름"/>
-          <button @click="search" class="book-button">검색</button>
+          <input v-model="titleKeyword" placeholder="검색할 콘서트 이름" type="text"/>
+          <button class="book-button" @click="search">검색</button>
         </div>
       </div>
     </nav>
@@ -32,7 +32,7 @@
       <button class="book-button" @click="openAddConcertModal">공연 추가</button>
       <div class="concert-list">
         <div v-for="concert in concerts" :key="concert.contentId" class="concert-item">
-          <img :src="concert.mainImagePath" :alt="concert.title" class="concert-image"/>
+          <img :alt="concert.title" :src="concert.mainImagePath" class="concert-image"/>
           <span :class="'genre-tag ' + concert.categoryName">{{ concert.categoryName }}</span>
           <h3>{{ concert.title }}</h3>
           <p>설명: {{ concert.description }}</p>
@@ -43,9 +43,11 @@
         </div>
       </div>
       <div class="pagination">
-        <button @click="prevPageSet" :disabled="currentPageSet === 1">&lt;</button>
-        <button v-for="page in pageSet" :key="page" @click="changePage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-        <button @click="nextPageSet" :disabled="currentPageSet * 10 >= totalPages">&gt;</button>
+        <button :disabled="currentPageSet === 1" @click="prevPageSet">&lt;</button>
+        <button v-for="page in pageSet" :key="page" :class="{ active: currentPage === page }"
+                @click="changePage(page)">{{ page }}
+        </button>
+        <button :disabled="currentPageSet * 10 >= totalPages" @click="nextPageSet">&gt;</button>
       </div>
     </main>
 
@@ -56,20 +58,20 @@
         <h3>공연 추가</h3>
         <form @submit.prevent="addConcert">
           <label for="category">카테고리(필수):</label>
-          <select v-model="newConcert.categoryId" id="category" required>
+          <select id="category" v-model="newConcert.categoryId" required>
             <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
           </select>
           <label for="title">제목(필수):</label>
-          <input type="text" v-model="newConcert.title" id="title" required/>
+          <input id="title" v-model="newConcert.title" required type="text"/>
           <label for="description">설명(선택):</label>
-          <textarea v-model="newConcert.description" id="description" required></textarea>
+          <textarea id="description" v-model="newConcert.description" required></textarea>
           <label for="mainImage">메인 이미지(필수) (다중 선택 불가능):</label>
-          <input type="file" @change="handleMainImageUpload" id="mainImage" required/>
+          <input id="mainImage" required type="file" @change="handleMainImageUpload"/>
           <label for="detailImages">상세 이미지(선택) (다중 선택 가능):</label>
-          <input type="file" @change="handleDetailImagesUpload" id="detailImages" multiple/>
-          <button type="submit" class="book-button">추가</button>
+          <input id="detailImages" multiple type="file" @change="handleDetailImagesUpload"/>
+          <button class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -80,7 +82,7 @@
         <button class="close-button" @click="closeDetailModal">&times;</button>
         <h3>공연 상세 조회</h3>
         <div v-if="selectedConcert">
-          <img :src="selectedConcert.mainImagePath" :alt="selectedConcert.title"
+          <img :alt="selectedConcert.title" :src="selectedConcert.mainImagePath"
                class="modal-image"/>
           <h3>{{ selectedConcert.title }}</h3>
           <p>설명: {{ selectedConcert.description }}</p>
@@ -90,21 +92,21 @@
                class="slider-container">
             <h4>상세 이미지</h4>
             <div class="custom-slider">
-              <button @click="prevSlide" class="slider-button prev-button">&#10094;</button>
+              <button class="slider-button prev-button" @click="prevSlide">&#10094;</button>
               <div class="slider-images">
                 <div v-for="(image, index) in selectedConcert.detailImageList"
                      :key="index"
-                     class="slider-image-wrapper"
-                     :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-                  <img :src="image.detailImagePath"
-                       :alt="'Detail image ' + (index + 1)"
+                     :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
+                     class="slider-image-wrapper">
+                  <img :alt="'Detail image ' + (index + 1)"
+                       :src="image.detailImagePath"
                        class="slider-image"/>
                   <div class="image-status">
                     <p>상태: {{ image.status }}</p>
                   </div>
                 </div>
               </div>
-              <button @click="nextSlide" class="slider-button next-button">&#10095;</button>
+              <button class="slider-button next-button" @click="nextSlide">&#10095;</button>
             </div>
           </div>
           <h4>라운드 정보</h4>
@@ -120,21 +122,21 @@
           <h2>콘텐츠 수정</h2>
           <form @submit.prevent="updateConcert">
             <label for="editCategory">카테고리(필수):</label>
-            <select v-model="selectedConcert.categoryId" id="editCategory" required>
+            <select id="editCategory" v-model="selectedConcert.categoryId" required>
               <option v-for="category in categories" :key="category.id" :value="category.id">
                 {{ category.name }}
               </option>
             </select>
             <label for="editTitle">제목(필수):</label>
-            <input type="text" v-model="selectedConcert.title" id="editTitle" required/>
+            <input id="editTitle" v-model="selectedConcert.title" required type="text"/>
             <label for="editDescription">설명(선택):</label>
-            <textarea v-model="selectedConcert.description" id="editDescription"></textarea>
+            <textarea id="editDescription" v-model="selectedConcert.description"></textarea>
             <label for="editMainImage">메인 이미지(필수) (다중 선택 불가능):</label>
-            <input type="file" @change="handleEditMainImageUpload" id="editMainImage"/>
+            <input id="editMainImage" type="file" @change="handleEditMainImageUpload"/>
             <label for="editDetailImages">상세 이미지 추가(선택) (다중 선택 가능):</label>
-            <input type="file" @change="handleEditDetailImagesUpload" id="editDetailImages"
-                   multiple/>
-            <button type="submit" class="book-button">수정</button>
+            <input id="editDetailImages" multiple type="file"
+                   @change="handleEditDetailImagesUpload"/>
+            <button class="book-button" type="submit">수정</button>
           </form>
         </div>
       </div>
@@ -146,7 +148,7 @@
         <button class="close-button" @click="closeStatusModal">&times;</button>
         <h3>상태 변경</h3>
         <label for="status">상태:</label>
-        <select v-model="editConcertData.status" id="status">
+        <select id="status" v-model="editConcertData.status">
           <option value="VISIBLE">보이기</option>
           <option value="HIDDEN">숨기기</option>
           <option value="DELETED">삭제</option>
@@ -158,8 +160,8 @@
 </template>
 
 <script>
-import { axiosAdminInstance } from "@/axios.js";
-import { logoutAdminUser } from "@/utils.js";
+import {axiosAdminInstance} from "@/axios.js";
+import {logoutAdminUser} from "@/utils.js";
 
 export default {
   name: 'MainPage',
@@ -274,7 +276,7 @@ export default {
       this.isLoggedIn = !!token;
     },
     async logout() {
-      const success = await logoutAdminUser();
+      const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
         this.$router.push({name: 'ManageLogin'});
@@ -411,4 +413,4 @@ export default {
 };
 </script>
 
-<style src="@/assets/css/main.css" scoped></style>
+<style scoped src="@/assets/css/main.css"></style>

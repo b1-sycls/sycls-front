@@ -3,10 +3,10 @@
     <header>
       <div class="logo">에티켓(everyTicket) 카테고리관리 페이지</div>
       <div class="user-actions">
-        <router-link to="/member-manage" class="nav-button">회원관리</router-link>
-        <router-link to="/place/placeManage" class="nav-button">공연장관리</router-link>
-        <router-link to="/manage/" class="nav-button">공연 관리</router-link>
-        <router-link v-if="isLoggedIn" to="/manage/mypage" class="nav-button">마이페이지</router-link>
+        <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+        <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
+        <router-link class="nav-button" to="/manage/">공연 관리</router-link>
+        <router-link v-if="isLoggedIn" class="nav-button" to="/manage/mypage">마이페이지</router-link>
         <button v-if="isLoggedIn" class="styled-button" @click="logout">로그아웃</button>
       </div>
     </header>
@@ -27,7 +27,9 @@
             <span>{{ category.name }} ({{ category.status }})</span>
             <div class="category-buttons">
               <button @click="editCategory(category.id, category.name)">수정</button>
-              <button v-if="category.status === 'ENABLE'" @click="disableCategory(category.id)">비활성화</button>
+              <button v-if="category.status === 'ENABLE'" @click="disableCategory(category.id)">
+                비활성화
+              </button>
               <button v-else @click="enableCategory(category.id)">활성화</button>
             </div>
           </div>
@@ -140,10 +142,10 @@ export default {
       this.editingCategoryName = '';
     },
     async logout() {
-      const success = await logoutAdminUser();
+      const success = await logoutAdminUser(true);
       if (success) {
         this.isLoggedIn = false;
-        this.$router.push({ name: 'ManageLogin' });
+        this.$router.push({name: 'ManageLogin'});
       }
     }
   },
@@ -159,4 +161,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/category.css" scoped></style>
+<style scoped src="../../assets/css/category.css"></style>
