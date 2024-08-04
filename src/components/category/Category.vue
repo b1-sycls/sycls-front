@@ -3,7 +3,7 @@
     <header>
       <div class="logo">에티켓(everyTicket) 카테고리관리 페이지</div>
       <div class="user-actions">
-        <router-link class="nav-button" to="/member-manage">회원관리</router-link>
+        <!--        <router-link class="nav-button" to="/member-manage">회원관리</router-link>-->
         <router-link class="nav-button" to="/place/placeManage">공연장관리</router-link>
         <router-link class="nav-button" to="/manage/">공연 관리</router-link>
         <router-link v-if="isLoggedIn" class="nav-button" to="/manage/mypage">마이페이지</router-link>
