@@ -1,15 +1,16 @@
 // src/axios.js
 import axios from 'axios';
+import { API_URLS } from '/src/config.js';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080', // 기본 URL 설정
+  baseURL: API_URLS.USER_BASE_URL, // 기본 URL 설정
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
 const axiosAdminInstance = axios.create({
-  baseURL: 'http://localhost:8081', // 관리자용 기본 URL 설정
+  baseURL: API_URLS.ADMIN_BASE_URL, // 관리자용 기본 URL 설정
   headers: {
     'Content-Type': 'application/json'
   }
@@ -29,7 +30,6 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-// 요청 인터셉터: 모든 요청에 토큰을 자동으로 추가합니다.
 axiosAdminInstance.interceptors.request.use(
     (config) => {
       const accessToken = localStorage.getItem('Authorization');
@@ -59,7 +59,7 @@ axiosInstance.interceptors.response.use(
     async (error) => {
       if (error.response && error.response.status === 401) {
         try {
-          await refreshAccessToken('http://localhost:8080/v1/auth/token');
+          await refreshAccessToken(API_URLS.USER_BASE_URL + '/v1/auth/token');
           return axiosInstance.request(error.config);
         } catch (refreshError) {
           return Promise.reject(refreshError);
@@ -84,7 +84,7 @@ axiosAdminInstance.interceptors.response.use(
     async (error) => {
       if (error.response && error.response.status === 401) {
         try {
-          await refreshAccessToken('http://localhost:8081/v1/auth/token');
+          await refreshAccessToken(API_URLS.ADMIN_BASE_URL + '/v1/auth/token');
           return axiosAdminInstance.request(error.config);
         } catch (refreshError) {
           return Promise.reject(refreshError);
