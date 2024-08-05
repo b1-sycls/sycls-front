@@ -7,61 +7,61 @@
         <label for="email">이메일</label>
         <div class="email-container">
           <input
-              type="email"
               v-model="email"
-              placeholder="이메일을 입력하세요"
               :disabled="isEmailChecked || isVerificationSent"
-              @input="resetEmailCheck"
+              placeholder="이메일을 입력하세요"
               required
+              type="email"
+              @input="resetEmailCheck"
           />
           <button
-              type="button"
               v-if="isEmailChecked"
-              @click="resetEmailCheck"
-              :disabled="isVerificationSent"
               :class="{ 'disabled-button': isVerificationSent }"
+              :disabled="isVerificationSent"
+              type="button"
+              @click="resetEmailCheck"
           >재설정
           </button>
           <button
-              type="button"
               v-else
+              type="button"
               @click="checkEmailDuplication"
           >중복 확인
           </button>
           <button
+              :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
+              :disabled="!isEmailChecked || isVerificationSent"
               type="button"
               @click="sendEmailVerification"
-              :disabled="!isEmailChecked || isVerificationSent"
-              :class="{ 'disabled-button': !isEmailChecked || isVerificationSent }"
           >인증
           </button>
         </div>
 
         <div v-if="emailCodeVisible">
           <label for="email-code">이메일 인증 코드</label>
-          <input type="text" v-model="emailCode" placeholder="인증 코드를 입력하세요">
+          <input v-model="emailCode" placeholder="인증 코드를 입력하세요" type="text">
         </div>
 
         <label for="username">사용자 이름</label>
-        <input type="text" v-model="username" placeholder="사용자 이름을 입력하세요" required>
+        <input v-model="username" placeholder="사용자 이름을 입력하세요" required type="text">
 
         <label for="nickname">닉네임</label>
         <div class="nickname-container">
-          <input type="text" v-model="nickname" placeholder="닉네임을 입력하세요" required>
+          <input v-model="nickname" placeholder="닉네임을 입력하세요" required type="text">
           <button type="button" @click="checkNicknameDuplication">중복 확인</button>
         </div>
 
         <label for="phone">전화번호</label>
-        <input type="tel" v-model="phone" placeholder="전화번호를 입력하세요" required>
+        <input v-model="phone" placeholder="전화번호를 입력하세요" required type="tel">
 
         <label for="password">비밀번호</label>
-        <input type="password" v-model="password" placeholder="비밀번호를 입력하세요" required>
+        <input v-model="password" placeholder="비밀번호를 입력하세요" required type="password">
 
         <label for="confirm-password">비밀번호 확인</label>
-        <input type="password" v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required>
+        <input v-model="confirmPassword" placeholder="비밀번호를 다시 입력하세요" required type="password">
 
         <label for="admin-code">어드민 코드</label>
-        <input type="text" v-model="adminCode" placeholder="어드민 코드를 입력하세요" required>
+        <input v-model="adminCode" placeholder="어드민 코드를 입력하세요" required type="text">
 
         <button type="submit">가입하기</button>
       </form>
@@ -164,7 +164,7 @@ export default {
         phoneNumber: this.phone,
         password: this.password,
         code: this.emailCode,
-        adminCode: this.adminCode
+        adminKey: this.adminCode
       };
 
       axiosAdminInstance.post('/v1/users/signup', signupData)
@@ -191,4 +191,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/signup.css" scoped></style>
+<style scoped src="../../assets/css/signup.css"></style>
