@@ -9,7 +9,7 @@
       <div id="seats">
         <div v-for="(row, rowIndex) in seatLayout" :key="rowIndex" class="row">
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
-            <div v-if="seat === 0" class="spacer"></div>
+            <div v-if="!seat" class="spacer"></div> <!-- seat가 undefined일 때 처리 -->
             <div v-else
                  class="seat"
                  :class="{ selected: isSelected(seat.seatCode), unavailable: !seat.seatStatusYn }"
