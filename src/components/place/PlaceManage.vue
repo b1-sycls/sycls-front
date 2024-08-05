@@ -1,6 +1,7 @@
 <template>
   <div class="nav-bar">
-<!--    <router-link class="nav-button" to="/member-manage">회원관리</router-link>-->
+    <!--    <router-link class="nav-button" to="/member-manage">회원관리</router-link>-->
+    <router-link class="nav-button" to="/manage">공연장관리</router-link>
     <router-link class="nav-button" to="/manage">공연관리</router-link>
     <router-link class="nav-button" to="/manage/category">카테고리관리</router-link>
     <button class="nav-button" @click="logout">로그아웃</button>
@@ -32,7 +33,8 @@
         <div class="venue-name">{{ venue.name }}</div>
         <div class="venue-address">{{ venue.location }}</div>
         <div class="venue-status">
-          <span :class="{'status-enabled': venue.status === 'ENABLE', 'status-disabled': venue.status === 'DISABLE'}">
+          <span
+              :class="{'status-enabled': venue.status === 'ENABLE', 'status-disabled': venue.status === 'DISABLE'}">
             {{ venue.status === 'ENABLE' ? '활성화' : '비활성화' }}
           </span>
         </div>

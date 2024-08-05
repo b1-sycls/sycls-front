@@ -166,6 +166,60 @@
         </form>
       </div>
     </div>
+
+    <div class="reviews-section">
+      <h2>리뷰</h2>
+      <div class="search-filters">
+        <label for="ratingFilter">평점:</label>
+        <select id="ratingFilter" v-model="searchCriteria.rating">
+          <option value="">전체</option>
+          <option v-for="n in 10" :key="n" :value="n">{{ n }}</option>
+        </select>
+
+        <label for="nickNameFilter">닉네임:</label>
+        <input id="nickNameFilter" v-model="searchCriteria.nickName" type="text"/>
+
+        <label for="statusFilter">상태:</label>
+        <select id="statusFilter" v-model="searchCriteria.reviewStatus">
+          <option value="">전체</option>
+          <option value="ENABLE">ENABLE</option>
+          <option value="DISABLE">DISABLE</option>
+        </select>
+
+        <button @click="fetchReviews">검색</button>
+      </div>
+      <ul>
+        <li v-for="review in reviews" :key="review.id" class="review-item">
+          <div class="review-content">
+            <p><strong>작성자</strong> : {{ review.nickName }}</p>
+            <p><span><strong>평점</strong> : {{ review.rating }}/10</span></p>
+            <p><strong>내용</strong> : {{ review.comment }}</p>
+            <p><strong>상태</strong> : {{ review.status }}</p>
+            <p class="review-date">{{ new Date(review.createdAt).toLocaleString() }}</p>
+          </div>
+          <div class="review-buttons">
+            <button @click="confirmDelete(review.id)">삭제</button>
+          </div>
+        </li>
+      </ul>
+      <div class="pagination">
+        <button :disabled="currentPage === 1" @click="prevPage">&lt;</button>
+        <button v-for="page in totalPages" :key="page" :class="{ active: currentPage === page }"
+                @click="changePage(page)">{{ page }}
+        </button>
+        <button :disabled="currentPage === totalPages" @click="nextPage">&gt;</button>
+      </div>
+
+      <!-- 삭제 확인 모달 -->
+      <div v-if="showDeleteConfirm" class="modal">
+        <div class="modal-content">
+          <span class="close-button" @click="closeDeleteConfirm">&times;</span>
+          <h3 style="text-align: center;"><strong>정말 삭제하시겠습니까?</strong></h3>
+          <button class="book-button" @click="deleteReview(confirmDeleteId)">예</button>
+          <button class="book-button" @click="closeDeleteConfirm">아니오</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -209,6 +263,18 @@ export default {
       newPerformer: {
         name: "",
         image: null
+      },
+      reviews: [],
+      currentPage: 1,
+      totalPages: 1,
+      showDeleteConfirm: false,
+      confirmDeleteId: null,
+      searchCriteria: {
+        rating: '',
+        nickName: '',
+        reviewStatus: '',
+        orderBy: 'createdAt',
+        isDesc: true
       }
     };
   },
@@ -465,10 +531,64 @@ export default {
         console.error("출연진을 수정하는 중에 오류가 발생했습니다.", error);
         alert(error.response.data.message || '출연진을 수정하는 중 오류가 발생했습니다.');
       });
+    },
+    fetchReviews() {
+      const contentId = this.$route.params.id;
+      axiosAdminInstance.get(`/v1/contents/${contentId}/reviews`, {
+        params: {
+          ...this.searchCriteria,
+          pageNum: this.currentPage,
+          pageSize: 4
+        }
+      })
+      .then(response => {
+        this.reviews = response.data.data.data;
+        this.totalPages = response.data.data.totalPage;
+      })
+      .catch(error => {
+        console.error("리뷰를 가져오는 중 오류가 발생했습니다.", error);
+      });
+    },
+    confirmDelete(reviewId) {
+      this.showDeleteConfirm = true;
+      this.confirmDeleteId = reviewId;
+    },
+    closeDeleteConfirm() {
+      this.showDeleteConfirm = false;
+      this.confirmDeleteId = null;
+    },
+    deleteReview(reviewId) {
+      axiosAdminInstance.delete(`/v1/reviews/${reviewId}`)
+      .then(response => {
+        alert("리뷰가 삭제되었습니다.");
+        this.fetchReviews();
+        this.closeDeleteConfirm();
+      })
+      .catch(error => {
+        console.error("리뷰를 삭제하는 중 오류가 발생했습니다.", error);
+        alert(error.response?.data?.message || "리뷰 삭제 중 오류가 발생했습니다.");
+      });
+    },
+    changePage(page) {
+      this.currentPage = page;
+      this.fetchReviews();
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.fetchReviews();
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.fetchReviews();
+      }
     }
   },
   mounted() {
     this.fetchConcertDetails();
+    this.fetchReviews();
   }
 };
 </script>
