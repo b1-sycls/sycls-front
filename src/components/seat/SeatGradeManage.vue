@@ -16,8 +16,8 @@
         <div v-for="(row, rowIndex) in seatLayout" :key="rowIndex" class="seat-row">
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
             <div v-if="seat === 0" class="spacer"></div>
-            <div v-else-if="seat && seat.seatCode"
-                 :class="{ selected: isSelected(seat.seatCode), unavailable: seat.seatGradeStatus && seat.seatGradeStatus !== 'ENABLE' }"
+            <div v-else-if="seat && seat.code"
+                 :class="{ selected: isSelected(seat.code), unavailable: seat.seatGradeStatus && seat.seatGradeStatus !== 'ENABLE' }"
                  class="seat"
                  @click="toggleSeat(seat)">
               {{ seat.seatCode }}
@@ -122,19 +122,19 @@ export default {
         const seatGradeInfo = seatGradesList.find(grade => grade.seatId === seat.seatId);
         const seatWithGrade = {...seat, ...seatGradeInfo};
 
-        layout[rowIndex][seatIndex] = seatWithGrade || { seatCode: 'N/A' }; // 빈 객체로 초기화
+        layout[rowIndex][seatIndex] = seatWithGrade || { code: 'N/A' }; // 빈 객체로 초기화
       });
 
-      this.seatLayout = layout.map(row => row.map(seat => seat || { seatCode: 'N/A' }));
+      this.seatLayout = layout.map(row => row.map(seat => seat || { code: 'N/A' }));
       this.maxSeat = this.$route.query.maxSeat;
       this.seatCount = seatGradesList.filter(seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
     },
     isSelected(code) {
-      return this.selectedSeat && this.selectedSeat.seatCode === code;
+      return this.selectedSeat && this.selectedSeat.code === code;
     },
     toggleSeat(seat) {
-      if (seat && seat.seatCode) {
-        this.selectedSeat = this.selectedSeat && this.selectedSeat.seatCode === seat.seatCode ? null : seat;
+      if (seat && seat.code) {
+        this.selectedSeat = this.selectedSeat && this.selectedSeat.code === seat.code ? null : seat;
       }
     },
     showModal(action) {
@@ -253,7 +253,7 @@ export default {
     },
     async handleCompleteGrades() {
       try {
-        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */ });
+        await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */});
         alert('좌석 등급 설정이 완료되었습니다.');
         await this.main();
       } catch (error) {
