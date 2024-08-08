@@ -11,8 +11,8 @@
           <template v-for="(seat, seatIndex) in row" :key="seatIndex">
             <div v-if="!seat" class="spacer"></div> <!-- seat가 undefined일 때 처리 -->
             <div v-else
-                 class="seat"
                  :class="{ selected: isSelected(seat.seatCode), unavailable: !seat.seatStatusYn }"
+                 class="seat"
                  @click="toggleSeat(seat.seatCode)">
               {{ seat.seatCode }}
             </div>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { axiosInstance } from "@/axios.js";
+import {axiosInstance} from "@/axios.js";
 
 export default {
   name: 'Seat',
@@ -100,10 +100,10 @@ export default {
       const roundId = this.$route.query.roundId;
       const seatRes = await this.fetchSeatInfo();
       const reservationRes = await this.fetchReservationLog();
-      if(reservationRes.reservationIds.length !== 0){
-        if(confirm("이전에 예매 진행 중이던 자리가 있습니다.\n계속하시겠습니까?")){
-          this.$router.push({ name: 'CheckOut', query:{roundId: roundId}});
-        }else{
+      if (reservationRes.reservationIds.length !== 0) {
+        if (confirm("이전에 예매 진행 중이던 자리가 있습니다.\n계속하시겠습니까?")) {
+          this.$router.push({name: 'CheckOut', query: {roundId: roundId}});
+        } else {
           await axiosInstance.post(`/v1/reservations/release`, {
             reservationIds: reservationRes.reservationIds,
           });
@@ -114,7 +114,7 @@ export default {
       const layout = [];
       seatGradeList.forEach(seat => {
         occupied.seatGradeIds.forEach(id => {
-          if(seat.seatGradeId === id){
+          if (seat.seatGradeId === id) {
             seat.seatStatusYn = false;
           }
         })
@@ -140,13 +140,15 @@ export default {
       if (seat && seat.seatStatusYn) {
         if (this.selectedSeats.includes(seatCode)) {
           this.selectedSeats = this.selectedSeats.filter(code => code !== seatCode);
-          this.selectedSeatDetails = this.selectedSeatDetails.filter(detail => detail.seatCode !== seatCode);
+          this.selectedSeatDetails = this.selectedSeatDetails.filter(
+              detail => detail.seatCode !== seatCode);
           this.totalSelectedPrice -= seat.seatGradePrice;
         } else {
           if (this.selectedSeats.length < this.maxSeats) {
             this.selectedSeats.push(seatCode);
             this.selectedSeatDetails.push({
               seatId: seat.seatId, // seatId 추가
+              seatGradeId: seat.seatGradeId, // seatGradeId 추가
               seatCode: seat.seatCode,
               seatGrade: seat.seatGradeType,
               seatPrice: seat.seatGradePrice.toLocaleString()
@@ -186,17 +188,17 @@ export default {
         try {
           alert(`선택된 좌석: ${this.selectedSeats.join(', ')}\n예매를 진행합니다.`);
           const roundId = this.$route.query.roundId;
-          const seatGradeIds = this.selectedSeatDetails.map(detail => detail.seatId); // seatId 사용
+          const seatGradeIds = this.selectedSeatDetails.map(detail => detail.seatGradeId); // seatId 사용
           await axiosInstance.post('/v1/reservations/reserve', {
             roundId: roundId,
             seatGradeIds: seatGradeIds
           });
-          this.$router.push({ name: 'CheckOut', query:{roundId: roundId}});
+          this.$router.push({name: 'CheckOut', query: {roundId: roundId}});
         } catch (error) {
           console.error('요청 중 오류 발생:', error);
-          if(error.response.data.message === "이미 취소 된 예매 정보입니다."){
+          if (error.response.data.message === "이미 취소 된 예매 정보입니다.") {
             alert('이미 예매 중이거나 매진된 좌석입니다.\n새로고침 후 다시 시도해주세요.');
-          }else{
+          } else {
             alert('예매에 실패했습니다.\n다시 시도해주세요.');
           }
 
@@ -212,4 +214,4 @@ export default {
 };
 </script>
 
-<style src="../../assets/css/seat.css" scoped></style>
+<style scoped src="../../assets/css/seat.css"></style>
