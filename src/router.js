@@ -12,6 +12,16 @@ const routes = [
         component: () => import('@/components/user/Signup.vue')
     },
     {
+        path: '/kakao-callback', // 새로운 경로 추가
+        name: 'KakaoCallback',
+        component: () => import('@/components/auth/KakaoCallback.vue')
+    },
+    {
+        path: '/kakao-signup',  // 경로 업데이트
+        name: 'KakaoSignup',
+        component: () => import('@/components/auth/KakaoSignup.vue')  // 이름 변경된 컴포넌트를 사용
+    },
+    {
         path: '/seat/select',
         name: 'Seat',
         component: () => import('@/components/seat/Seat.vue')
