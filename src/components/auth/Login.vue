@@ -17,6 +17,9 @@
         <p><a @click="showFindPasswordModal">비밀번호 찾기</a></p>
         <p><a @click="goToSignup">회원가입</a></p>
       </div>
+      <div id="kakao-login-btn" @click="kakaoLogin">
+        <img src="https://developers.kakao.com/tool/resource/static/img/button/login/full/ko/kakao_login_medium_narrow.png" alt="카카오 로그인 버튼"/>
+      </div>
     </div>
 
     <!-- 아이디 찾기 모달 -->
@@ -64,6 +67,8 @@
 
 <script>
 import {axiosInstance} from "@/axios.js";
+import {API_KEYS} from "@/apikey.js";
+import {API_URLS} from "@/config.js";
 
 export default {
   name: 'Login',
@@ -177,8 +182,15 @@ export default {
     },
     goToMain() {
       this.$router.push({name: 'MainPage'});
+    },
+    kakaoLogin() {
+      const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
+      const clientId = API_KEYS.CLIENT_ID;
+      const redirectUri = API_URLS.USER_BASE_URL + '/v1/user/kakao/callback';
+
+      window.location.href = `${kakaoAuthUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
     }
-  }
+  },
 };
 </script>
 
