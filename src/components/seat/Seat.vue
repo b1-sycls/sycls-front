@@ -88,7 +88,7 @@ export default {
     },
     async fetchReservationLog() {
       const roundId = this.$route.query.roundId;
-      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/reserve`);
+      const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations`);
       return response.data.data;
     },
     async fetchOccupiedSeat() {
@@ -100,11 +100,12 @@ export default {
       const roundId = this.$route.query.roundId;
       const seatRes = await this.fetchSeatInfo();
       const reservationRes = await this.fetchReservationLog();
-      if (reservationRes.reservationIds.length !== 0) {
+      console.log(reservationRes);
+      if (reservationRes.seatGradeIds.length !== 0) {
         if (confirm("이전에 예매 진행 중이던 자리가 있습니다.\n계속하시겠습니까?")) {
           this.$router.push({name: 'CheckOut', query: {roundId: roundId}});
         } else {
-          await axiosInstance.post(`/v1/reservations/release`, {
+          await axiosInstance.post(`/v1/rounds/${roundId}/reservations/release`, {
             reservationIds: reservationRes.reservationIds,
           });
         }
@@ -189,7 +190,7 @@ export default {
           alert(`선택된 좌석: ${this.selectedSeats.join(', ')}\n예매를 진행합니다.`);
           const roundId = this.$route.query.roundId;
           const seatGradeIds = this.selectedSeatDetails.map(detail => detail.seatGradeId); // seatId 사용
-          await axiosInstance.post('/v1/reservations/reserve', {
+          await axiosInstance.post('/v1/reservations', {
             roundId: roundId,
             seatGradeIds: seatGradeIds
           });
