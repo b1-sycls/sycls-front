@@ -71,6 +71,8 @@ export default {
         price: this.totalPrice,
         seatGradeIds: reservationIds
       })
+      localStorage.removeItem('@tosspayments/merchant-browser-id')
+      localStorage.removeItem('@tosspayments/payment-widget-previous-payment-method-id')
     } else {
       console.error("No data found in session storage");
     }
