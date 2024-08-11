@@ -1,16 +1,7 @@
 <template>
   <div>
     <div class="box_section" style="width: 600px">
-      <!--    TODO-->
-      <!--      <div class="p-grid typography&#45;&#45;p" style="margin-top: 10px">-->
-      <!--        <div class="p-grid-col text&#45;&#45;left"><b>paymentKey</b></div>-->
-      <!--        <div class="p-grid-col text&#45;&#45;right" id="paymentKey" style="white-space: initial; width: 250px">{{-->
-      <!--            paymentKey-->
-      <!--          }}-->
-      <!--        </div>-->
-      <!--    </div>-->
     </div>
-
     <div class="success-container">
       <div class="success-icon">✔</div>
       <h1>결제가 완료되었습니다!</h1>
@@ -30,22 +21,13 @@
           </span>
         </p>
       </div>
-
       <div class="total">
         총 결제 금액: {{ totalPrice }}원
       </div>
-
       <div class="buttons">
         <router-link to="/" class="button">홈으로</router-link>
       </div>
     </div>
-    <!--    TODO-->
-    <!--  <div class="box_section" style="width: 600px; text-align: left">-->
-    <!--    <b>Response Data :</b>-->
-    <!--    <div id="response" style="white-space: initial">-->
-    <!--      <pre>{{ responseData }}</pre>-->
-    <!--    </div>-->
-    <!--  </div>-->
   </div>
 </template>
 
@@ -79,16 +61,18 @@ export default {
       this.seatInfos = data.seatInfos;
       this.totalPrice = data.totalPrice;
       this.roundId = data.roundId;
-
       // seatInfos 내부의 reservationIds 추출
       const reservationIds = this.seatInfos.reduce((acc, seatInfo) => {
         return acc.concat(seatInfo.reservationIds);
       }, []);
       axiosInstance.post('/v1/payment/success', {
+        roundId: this.roundId,
         orderId: this.orderId,
         price: this.totalPrice,
         seatGradeIds: reservationIds
       })
+      localStorage.removeItem('@tosspayments/merchant-browser-id')
+      localStorage.removeItem('@tosspayments/payment-widget-previous-payment-method-id')
     } else {
       console.error("No data found in session storage");
     }
