@@ -74,7 +74,7 @@ export default {
         console.error("Error during confirmation:", error);
         if (error.response) {
           const {data} = error.response;
-          window.location.href = `/payment/fail?message=${data.message}&code=${data.code}`;
+          window.location.href = `/payment/fail?message=${error.response.data.message}&code=${error.response.data.code}`;
         }
       }
     }
