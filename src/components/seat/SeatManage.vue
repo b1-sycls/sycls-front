@@ -42,8 +42,17 @@
     <div v-if="showModalFlag" class="modal-overlay">
       <div class="modal-content">
         <h3>좌석 {{ modalAction }}하기</h3>
-        <label for="seatCode">좌석 코드:</label>
-        <input id="seatCode" v-model="modalSeatCode" placeholder="좌석 코드를 입력하세요"/>
+
+        <!-- 행 선택 (A~Z) -->
+        <label for="seatRow">행 선택:</label>
+        <select v-model="modalSeatRow" id="seatRow">
+          <option v-for="char in alphabet" :key="char" :value="char">{{ char }}</option>
+        </select>
+
+        <!-- 좌석 번호 입력 -->
+        <label for="seatNumber">좌석 번호:</label>
+        <input id="seatNumber" v-model="modalSeatNumber" type="number" min="1" placeholder="좌석 번호 입력"/>
+
         <div class="modal-buttons">
           <button class="button" @click="handleModalAction">확인</button>
           <button class="button" @click="closeModal">취소</button>
@@ -64,12 +73,14 @@ export default {
   data() {
     return {
       seatLayout: [],
-      selectedSeat: null, // 선택된 좌석
+      selectedSeat: null,
       maxSeat: 0,
       seatCount: 0,
       showModalFlag: false,
       modalAction: '',
-      modalSeatCode: '',
+      modalSeatRow: 'A',       // 선택된 행
+      modalSeatNumber: 1,      // 입력된 좌석 번호
+      alphabet: [...Array(26)].map((_, i) => String.fromCharCode(65 + i)) // A~Z까지 알파벳 생성
     };
   },
   methods: {
@@ -95,7 +106,6 @@ export default {
         layout[rowIndex][seatIndex] = seat || {seatCode: 'N/A'};
       });
 
-      // 빈 좌석 배열을 생성합니다.
       this.seatLayout = layout.map(row => row.map(seat => seat || {seatCode: 'N/A'}));
 
       this.maxSeat = this.$route.query.maxSeat;
@@ -120,28 +130,34 @@ export default {
       }
 
       this.modalAction = action;
-      this.modalSeatCode = '';
+      this.modalSeatRow = 'A';
+      this.modalSeatNumber = 1;
       this.showModalFlag = true;
 
       if (action === '수정' && this.selectedSeat) {
-        this.modalSeatCode = this.selectedSeat.code; // 모달에 선택된 좌석 코드 표시
+        this.modalSeatRow = this.selectedSeat.code.charAt(0);  // 선택된 좌석 코드의 행을 가져옴
+        this.modalSeatNumber = parseInt(this.selectedSeat.code.slice(1));  // 좌석 번호 부분을 가져옴
       }
     },
     closeModal() {
       this.showModalFlag = false;
     },
     async handleModalAction() {
-      if (!this.modalSeatCode.trim()) {
-        alert('좌석 코드를 입력해주세요.');
+      if (!this.modalSeatNumber || this.modalSeatNumber <= 0) {
+        alert('유효한 좌석 번호를 입력해주세요.');
         return;
       }
+
+      // 선택된 행과 좌석 번호를 결합하여 seatCode 생성
+      const seatCode = `${this.modalSeatRow}${this.modalSeatNumber}`;
+
       switch (this.modalAction) {
         case '추가':
-          await this.addSeat(this.modalSeatCode);
+          await this.addSeat(seatCode);
           break;
         case '수정':
           if (this.selectedSeat) {
-            await this.modifySeat(this.selectedSeat.seatId, this.modalSeatCode);
+            await this.modifySeat(this.selectedSeat.seatId, seatCode);
           }
           break;
         case '삭제':
@@ -164,7 +180,6 @@ export default {
       } catch (error) {
         alert(error.response.data.message);
       }
-      // 좌석 등록 후 상태 업데이트
       await this.main();
     },
     async modifySeat(seatId, seatCode) {
@@ -175,7 +190,6 @@ export default {
       } catch (error) {
         alert(error.response.data.message);
       }
-      // 좌석 수정 후 상태 업데이트
       await this.main();
     },
     async removeSeat(seatId) {
@@ -186,7 +200,6 @@ export default {
       } catch (error) {
         alert(error.response.data.message);
       }
-      // 좌석 삭제 후 상태 업데이트
       await this.main();
     },
     async logout() {

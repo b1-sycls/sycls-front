@@ -31,20 +31,22 @@
       <div>
         <span>전체 {{ maxSeat }}석</span> / <span>현재 {{ seatCount }}석</span>
       </div>
-      <div v-if="selectedSeat">
-        <p>좌석 코드: {{ selectedSeat.code }}</p>
-        <p v-if="selectedSeat.seatGradeType">좌석 등급: {{ selectedSeat.seatGradeType }}</p>
-        <p v-if="selectedSeat.seatGradePrice">좌석 가격: {{ selectedSeat.seatGradePrice }}</p>
+      <div v-if="selectedSeats.length">
+        <p>선택된 좌석들:</p>
+        <ul>
+          <li v-for="seat in selectedSeats" :key="seat.code">
+            {{ seat.code }} - {{ seat.seatGradeType || '등급 없음' }} / {{ seat.seatGradePrice || '가격 없음' }}
+          </li>
+        </ul>
       </div>
     </div>
     <div id="selectedSeats">
       <div class="management-controls">
-        <button :disabled="!selectedSeat" class="button" @click="showModal('추가')">좌석 등급 추가</button>
-        <button :disabled="!selectedSeat || !selectedSeat.seatGradeType" class="button"
+        <button :disabled="isAddButtonDisabled" class="button" @click="showModal('추가')">좌석 등급 추가</button>
+        <button :disabled="!selectedSeats.length || !selectedSeats.some(seat => seat.seatGradeId)" class="button"
                 @click="showModal('수정')">좌석 등급 수정
         </button>
-        <button :disabled="!selectedSeat" class="button" @click="handleDelete">좌석 등급 삭제</button>
-        <!--        <button class="button" @click="handleCompleteGrades">좌석 등급 설정 완료</button>-->
+        <button :disabled="!selectedSeats.length || !selectedSeats.some(seat => seat.seatGradeId)" class="button" @click="handleDelete">좌석 등급 삭제</button>
       </div>
     </div>
 
@@ -52,8 +54,7 @@
     <div v-if="showModalFlag" class="modal-overlay">
       <div class="modal-content">
         <h3>좌석 등급 {{ modalAction }}하기</h3>
-        <label for="seatCode">좌석 코드:</label>
-        <p id="seatCode">{{ modalSeatCode }}</p>
+        <p>선택된 좌석들: {{ modalSeatCodes.join(', ') }}</p>
         <label for="seatGrade">좌석 등급:</label>
         <select id="seatGrade" v-model="modalSeatGrade">
           <option value="VIP">VIP</option>
@@ -81,15 +82,20 @@ export default {
   data() {
     return {
       seatLayout: [],
-      selectedSeat: null,
+      selectedSeats: [],
       maxSeat: 0,
       seatCount: 0,
       showModalFlag: false,
       modalAction: '',
-      modalSeatCode: '',
+      modalSeatCodes: [],
       modalSeatGrade: '',
       modalSeatPrice: ''
     };
+  },
+  computed: {
+    isAddButtonDisabled() {
+      return !this.selectedSeats.length || this.selectedSeats.some(seat => seat.seatGradeId);
+    }
   },
   methods: {
     async fetchSeatInfo() {
@@ -131,28 +137,33 @@ export default {
           seatGrade => seatGrade.seatGradeStatus === 'ENABLE').length;
     },
     isSelected(code) {
-      return this.selectedSeat && this.selectedSeat.code === code;
+      return this.selectedSeats.some(seat => seat.code === code);
     },
     toggleSeat(seat) {
       if (seat && seat.code) {
-        this.selectedSeat = this.selectedSeat && this.selectedSeat.code === seat.code ? null : seat;
+        const index = this.selectedSeats.findIndex(selectedSeat => selectedSeat.code === seat.code);
+        if (index !== -1) {
+          this.selectedSeats.splice(index, 1);
+        } else {
+          this.selectedSeats.push(seat);
+        }
       }
     },
     showModal(action) {
-      if (!this.selectedSeat) {
+      if (!this.selectedSeats.length) {
         alert('좌석을 선택해 주세요.');
         return;
       }
 
       this.modalAction = action;
-      this.modalSeatCode = this.selectedSeat.code;
+      this.modalSeatCodes = this.selectedSeats.map(seat => seat.code);
       this.modalSeatGrade = '';
       this.modalSeatPrice = '';
       this.showModalFlag = true;
 
-      if (action === '수정' && this.selectedSeat) {
-        this.modalSeatGrade = this.selectedSeat.seatGradeType;
-        this.modalSeatPrice = this.selectedSeat.seatGradePrice;
+      if (action === '수정' && this.selectedSeats.length) {
+        this.modalSeatGrade = this.selectedSeats[0].seatGradeType;
+        this.modalSeatPrice = this.selectedSeats[0].seatGradePrice;
       }
     },
     closeModal() {
@@ -181,25 +192,24 @@ export default {
 
       switch (this.modalAction) {
         case '추가':
-          if (this.selectedSeat) {
-            await this.addSeat(this.selectedSeat.seatId, seatGrade, seatPrice);
-            break;
+          const seatIds = this.selectedSeats.map(seat => seat.seatId).filter(id => id);
+          if(seatIds.length){
+            await this.addSeat(seatIds, seatGrade, seatPrice);
           }
           break;
         case '수정':
-          if (this.selectedSeat) {
-            await this.modifySeat(this.selectedSeat.seatGradeId, seatGrade, seatPrice);
-          }
-          break;
-        case '삭제':
-          if (this.selectedSeat) {
-            await this.removeSeat(this.selectedSeat.seatGradeId);
+          const seatGradeIds = this.selectedSeats.map(seat => seat.seatGradeId).filter(id => id);
+          if (seatGradeIds.length) {
+            await this.modifySeats(seatGradeIds, seatGrade, seatPrice);
+          } else {
+            alert('수정할 좌석의 등급이 없습니다.');
           }
           break;
       }
       this.closeModal();
+      this.selectedSeats = [];  // 작업 완료 후 선택된 좌석 초기화
     },
-    async addSeat(seatId, seatGrade, seatPrice) {
+    async addSeat(seatIds, seatGrade, seatPrice) {
       try {
         if (this.seatCount >= this.maxSeat) {
           alert("좌석등급이 이미 최대로 설정되었습니다.");
@@ -209,7 +219,7 @@ export default {
         await axiosAdminInstance.post(`/v1/seat-grades`, {
           roundId: roundId,
           seatGradeType: seatGrade,
-          seatId: seatId,
+          seatIdList: seatIds,
           price: seatPrice
         });
         alert(`추가되었습니다.`);
@@ -218,11 +228,12 @@ export default {
       }
       await this.main();
     },
-    async modifySeat(seatGradeId, seatGrade, seatPrice) {
+    async modifySeats(seatGradeIdList, seatGrade, seatPrice) {
       try {
+        const roundId = this.$route.query.roundId;
         await axiosAdminInstance.patch(`/v1/seat-grades`, {
-          roundId: this.$route.query.roundId,
-          seatGradeId: seatGradeId,
+          roundId: roundId,
+          seatGradeIdList: seatGradeIdList,
           seatGradeType: seatGrade,
           price: seatPrice
         });
@@ -232,35 +243,38 @@ export default {
       }
       await this.main();
     },
-    async removeSeat(seatGradeId) {
+    async removeSeats(seatGradeIdList) {
       try {
         const roundId = this.$route.query.roundId;
-        await axiosAdminInstance.delete(`/v1/rounds/${roundId}/seat-grades/${seatGradeId}`);
+        await axiosAdminInstance.patch(`/v1/seat-grades/delete`, {
+          roundId: roundId,
+          seatGradeIdList: seatGradeIdList
+        });
         alert('삭제되었습니다.');
       } catch (error) {
         alert(error.response.data.message);
       }
+      this.selectedSeats = [];  // 작업 완료 후 선택된 좌석 초기화
       await this.main();
     },
-    handleDelete() {
-      if (!this.selectedSeat) {
+    async handleDelete() {
+      if (!this.selectedSeats.length) {
         alert('삭제할 좌석을 선택해 주세요.');
         return;
       }
 
-      if (confirm('선택한 좌석을 삭제하시겠습니까?')) {
-        this.removeSeat(this.selectedSeat.seatId);
+      const seatGradeIdsToDelete = this.selectedSeats.map(seat => seat.seatGradeId).filter(id => id);
+
+      if (seatGradeIdsToDelete.length === 0) {
+        alert('삭제할 좌석의 등급이 없습니다.');
+        return;
       }
-    },
-    // async handleCompleteGrades() {
-    //   try {
-    //     await axiosAdminInstance.post('/v1/complete-seat-grades', { /* 필요한 데이터 */});
-    //     alert('좌석 등급 설정이 완료되었습니다.');
-    //     await this.main();
-    //   } catch (error) {
-    //     alert(error.response.data.message);
-    //   }
-    // }
+
+      if (confirm('선택한 좌석들을 삭제하시겠습니까?')) {
+        await this.removeSeats(seatGradeIdsToDelete);
+      }
+    }
+    ,
   },
   async mounted() {
     await this.main();
