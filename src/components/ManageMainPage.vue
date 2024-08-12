@@ -59,7 +59,7 @@
         <form @submit.prevent="addConcert">
           <label for="category">카테고리(필수):</label>
           <select id="category" v-model="newConcert.categoryId" required>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
+            <option v-for="category in enableCategory" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
           </select>
@@ -172,6 +172,7 @@ export default {
       totalPages: 1,
       selectedCategory: '전체',
       categories: [],
+      enableCategory: [],
       concerts: [],
       isLoggedIn: false,
       showAddConcertModal: false,
@@ -248,6 +249,16 @@ export default {
         alert(error.response.data.message || '카테고리를 가져오는 중 오류가 발생했습니다.');
       });
     },
+    fetchEnableCategories() {
+      axiosAdminInstance.get('/v1/categories/enable')
+      .then(response => {
+        this.enableCategory = response.data.data;
+      })
+      .catch(error => {
+        console.error("카테고리를 가져오는 중에 오류가 발생했습니다.", error);
+        alert(error.response.data.message || '카테고리를 가져오는 중 오류가 발생했습니다.');
+      });
+    },
     viewRound(concert) {
       this.$router.push({name: 'ManageConcert', params: {id: concert.contentId}});
     },
@@ -283,6 +294,7 @@ export default {
       }
     },
     openAddConcertModal() {
+      this.fetchEnableCategories();
       this.showAddConcertModal = true;
     },
     closeAddConcertModal() {
