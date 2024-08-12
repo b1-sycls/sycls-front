@@ -10,8 +10,12 @@
           <span v-for="(seatInfo, index) in seatInfos" :key="index">
             <template v-if="index > 0">, </template>
             {{ seatInfo.seatGradeType }}
-            <template v-if="seatInfo.seatCodes.length > 1">({{ seatInfo.seatCodes.join(', ') }})</template>
-            <template v-else>({{ seatInfo.seatCodes[0] }})</template>
+            <template v-if="seatInfo.seatCodes.length > 1">
+              ({{ seatInfo.seatCodes.join(', ') }})
+            </template>
+            <template v-else>
+              ({{ seatInfo.seatCodes[0] }})
+            </template>
           </span>
         </p>
       </div>
@@ -33,13 +37,14 @@
 </template>
 
 <script>
-import {axiosInstance} from "@/axios.js";
+import { axiosInstance } from "@/axios.js";
 
 export default {
   name: 'CheckOut',
   data() {
     return {
       contentId: '',
+      roundId: '',
       contentTitle: '',
       description: '',
       location: '',
@@ -65,13 +70,12 @@ export default {
     },
     async fetchConcertAndRound() {
       try {
-        // TODO
         const roundId = this.$route.query.roundId;
         const response = await axiosInstance.get(`/v1/rounds/${roundId}`);
         const data = response.data.data;
-
+        this.roundId = roundId;
         this.contentId = data.contentId;
-        this.contentTitle = data.contentTitle + " 회차( " + data.sequence + " )";
+        this.contentTitle = `${data.contentTitle} 회차( ${data.sequence} )`;
         this.description = data.description;
         this.location = data.location;
         this.contentRoundId = data.roundId;
@@ -81,6 +85,7 @@ export default {
 
         // sessionStorage에 데이터 저장
         sessionStorage.setItem('contentData', JSON.stringify({
+          roundId: this.roundId,
           contentId: this.contentId,
           contentTitle: this.contentTitle,
           location: this.location,
@@ -96,13 +101,13 @@ export default {
     },
     async fetchReservationInfo() {
       try {
-        const response = await axiosInstance.get('/v1/reservations/reserve/detail');
+        const roundId = this.$route.query.roundId;
+        const response = await axiosInstance.get(`/v1/rounds/${roundId}/reservations/detail`);
         this.seatInfos = response.data.data.seatInfos;
 
         if (!this.seatInfos || this.seatInfos.length === 0) {
-          console.log("예약 정보가 없습니다.");
           alert("예약 정보가 없습니다.");
-          location.href = "/";
+          history.go(-1);
         }
 
         // 총 결제 금액 계산
@@ -136,13 +141,13 @@ export default {
         variantKey: "DEFAULT",
       });
 
-      await widgets.renderAgreement({selector: "#agreement", variantKey: "AGREEMENT"});
+      await widgets.renderAgreement({ selector: "#agreement", variantKey: "AGREEMENT" });
 
       button.addEventListener("click", async () => {
         await widgets.requestPayment({
           orderId: this.generateRandomString(),
           orderName: "에티켓(EveryTicket)",
-          successUrl: `${window.location.origin}/payment/middle`,
+          successUrl: `${window.location.origin}/payment/middle?roundId=${this.roundId}`,  // 수정된 부분
           failUrl: `${window.location.origin}/payment/fail`,
           customerEmail: userInfo.email,
           customerName: userInfo.username,
@@ -151,7 +156,8 @@ export default {
       });
     },
     generateRandomString() {
-      return window.btoa(Math.random()).slice(0, 20);
+      return [...crypto.getRandomValues(new Uint8Array(10))]
+          .map(b => b.toString(36).padStart(2, '0')).join('').slice(0, 20);
     }
   },
   async mounted() {
