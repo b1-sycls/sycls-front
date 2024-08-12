@@ -378,9 +378,9 @@ export default {
       });
     },
     fetchPlaces() {
-      axiosAdminInstance.get('/v1/places')
+      axiosAdminInstance.get('/v1/places/enable')
       .then(response => {
-        this.places = response.data.data.data;  // API의 "data" 필드 내 "data" 배열을 가져옵니다.
+        this.places = response.data.data;  // API의 "data" 필드 내 "data" 배열을 가져옵니다.
       })
       .catch(error => {
         console.error("공연장 정보를 가져오는 중에 오류가 발생했습니다.", error);
