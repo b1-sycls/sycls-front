@@ -28,7 +28,7 @@
       </div>
       <div class="show-info">
         <div class="show-dates">
-          <h2>공연 날짜</h2>
+          <h2>공연 날짜 (회차를 선택해 주세요)</h2>
           <ul>
             <li v-for="show in concert.shows" :key="show.roundId"
                 :class="{ selected: selectedShow === show }"
