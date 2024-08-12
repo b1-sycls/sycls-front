@@ -1,6 +1,7 @@
 // src/axios.js
 import axios from 'axios';
 import { API_URLS } from '/src/config.js';
+import {router} from '/src/router'; // Vue 라우터를 사용하여 리다이렉트
 
 const axiosInstance = axios.create({
   baseURL: API_URLS.USER_BASE_URL, // 기본 URL 설정
@@ -65,6 +66,9 @@ axiosInstance.interceptors.response.use(
           return Promise.reject(refreshError);
         }
       }
+      if (error.response && error.response.status === 403) {
+        handleForbiddenErrorForUser();
+      }
       return Promise.reject(error);
     }
 );
@@ -89,6 +93,9 @@ axiosAdminInstance.interceptors.response.use(
         } catch (refreshError) {
           return Promise.reject(refreshError);
         }
+      }
+      if (error.response && error.response.status === 403) {
+        handleForbiddenErrorForAdmin();
       }
       return Promise.reject(error);
     }
@@ -118,5 +125,22 @@ async function refreshAccessToken(url) {
     localStorage.setItem('RefreshToken', newRefreshToken);
   }
 }
+
+// 403 Forbidden 에러 처리 함수 (User용)
+function handleForbiddenErrorForUser() {
+  localStorage.removeItem('Authorization');
+  localStorage.removeItem('RefreshToken');
+  alert('세션이 만료되었습니다. 다시 로그인해 주세요.');
+  router.push('/login'); // User는 '/login' 경로로 리다이렉트
+}
+
+// 403 Forbidden 에러 처리 함수 (Admin용)
+function handleForbiddenErrorForAdmin() {
+  localStorage.removeItem('Authorization');
+  localStorage.removeItem('RefreshToken');
+  alert('접근 권한이 없습니다. 다시 로그인해 주세요.');
+  router.push('/manage/login'); // Admin은 '/manage/login' 경로로 리다이렉트
+}
+
 
 export { axiosInstance, axiosAdminInstance };
