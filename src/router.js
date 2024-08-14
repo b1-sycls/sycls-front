@@ -113,6 +113,11 @@ const routes = [
         component: () => import('@/components/user/ManageMyPage.vue'),
         meta: {requiresAuth: true}
     },
+    {
+        path: '/manage/dummy-data',
+        name: 'Dummy',
+        component: () => import('@/components/test/dummy.vue')
+    },
 ];
 
 export const router = createRouter({
