@@ -141,6 +141,12 @@ main {
   margin: 0.25rem;
 }
 
+.book-button:disabled {
+  background-color: #bbb;
+  color: #fff;
+  cursor: not-allowed;
+}
+
 .book-button:hover {
   background-color: #6A1B9A;
 }

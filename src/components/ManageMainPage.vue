@@ -71,7 +71,7 @@
           <input id="mainImage" required type="file" @change="handleMainImageUpload"/>
           <label for="detailImages">상세 이미지(선택) (다중 선택 가능):</label>
           <input id="detailImages" multiple type="file" @change="handleDetailImagesUpload"/>
-          <button class="book-button" type="submit">추가</button>
+          <button :disabled="isAddingConcert" class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -189,7 +189,8 @@ export default {
       editConcertData: {},
       currentIndex: 0,
       editMainImage: null,
-      editDetailImages: []
+      editDetailImages: [],
+      isAddingConcert: false,  // 공연 추가 요청 중인지 여부를 관리하는 상태
     };
   },
   computed: {
@@ -314,6 +315,8 @@ export default {
       this.newConcert.detailImages = Array.from(event.target.files);
     },
     addConcert() {
+      this.isAddingConcert = true;
+
       const formData = new FormData();
       const dtoBlob = new Blob([JSON.stringify({
         categoryId: this.newConcert.categoryId,
@@ -340,6 +343,9 @@ export default {
       .catch(error => {
         console.error("콘서트를 추가하는 중에 오류가 발생했습니다.", error);
         alert(error.response.data.message || '콘서트를 추가하는 중 오류가 발생했습니다.');
+      })
+      .finally(() => {
+        this.isAddingConcert = false;  // 요청 완료 후 버튼을 활성화
       });
     },
     openStatusModal(concert) {
