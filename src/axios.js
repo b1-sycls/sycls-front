@@ -70,6 +70,12 @@ axiosInstance.interceptors.response.use(
             if (error.response && error.response.status === 403) {
                 handleForbiddenErrorForUser();
             }
+            if (error.response && error.response.data.message === 'valid') {
+                const errorMessages = Object.values(error.response.data.data)
+                .join('\n');
+                alert(`유효성 검사 오류:\n${errorMessages}`);
+                return Promise.reject(new Error('Validation error'));
+            }
             return Promise.reject(error);
         }
 );
@@ -98,6 +104,12 @@ axiosAdminInstance.interceptors.response.use(
             }
             if (error.response && error.response.status === 403) {
                 handleForbiddenErrorForAdmin();
+            }
+            if (error.response && error.response.data.message === 'valid') {
+                const errorMessages = Object.values(error.response.data.data)
+                .join('\n');
+                alert(`유효성 검사 오류:\n${errorMessages}`);
+                return Promise.reject(new Error('Validation error'));
             }
             return Promise.reject(error);
         }
