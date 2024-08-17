@@ -144,7 +144,7 @@ async function refreshAccessToken(url) {
 function handleForbiddenErrorForUser() {
     localStorage.removeItem('Authorization');
     localStorage.removeItem('RefreshToken');
-    alert('세션이 만료되었습니다. 다시 로그인해 주세요.');
+    alert('다시 로그인해 주세요.');
     router.push('/login'); // User는 '/login' 경로로 리다이렉트
 }
 

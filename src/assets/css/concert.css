@@ -329,6 +329,12 @@ main {
   background-color: #6A1B9A;
 }
 
+.book-button:disabled {
+  background-color: #BDBDBD;
+  cursor: not-allowed;
+}
+
+
 .pagination {
   display: flex;
   justify-content: center;

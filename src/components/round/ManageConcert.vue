@@ -86,7 +86,7 @@
           <input id="startTime" v-model="newRound.startTime" required type="time"/>
           <label for="endTime">종료 시간:</label>
           <input id="endTime" v-model="newRound.endTime" required type="time"/>
-          <button class="book-button" type="submit">추가</button>
+          <button :disabled="isAddingRound" class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -142,7 +142,7 @@
           <input id="performerName" v-model="newPerformer.name" required type="text"/>
           <label for="performerImage">출연진 이미지:</label>
           <input id="performerImage" required type="file" @change="handlePerformerImageUpload"/>
-          <button class="book-button" type="submit">추가</button>
+          <button :disabled="isAddingRound" class="book-button" type="submit">추가</button>
         </form>
       </div>
     </div>
@@ -275,7 +275,8 @@ export default {
         reviewStatus: '',
         orderBy: 'createdAt',
         isDesc: true
-      }
+      },
+      isAddingRound: false,  // 회차 추가 요청 중인지 여부를 관리하는 상태
     };
   },
   methods: {
@@ -366,6 +367,8 @@ export default {
       this.showAddRoundModal = false;
     },
     addRound() {
+      this.isAddingRound = true;
+
       axiosAdminInstance.post('/v1/rounds', this.newRound)
       .then(response => {
         this.fetchConcertDetails();
@@ -375,6 +378,9 @@ export default {
       .catch(error => {
         console.error("회차를 추가하는 중에 오류가 발생했습니다.", error);
         alert(error.response.data.message || '회차를 추가하는 중 오류가 발생했습니다.');
+      })
+      .finally(() => {
+        this.isAddingRound = false;  // 요청 완료 후 버튼을 활성화
       });
     },
     fetchPlaces() {
@@ -470,6 +476,8 @@ export default {
       this.newPerformer.image = event.target.files[0];
     },
     addPerformer() {
+      this.isAddingRound = true;
+
       const formData = new FormData();
       const dtoBlob = new Blob([JSON.stringify({
         name: this.newPerformer.name,
@@ -492,6 +500,9 @@ export default {
       .catch(error => {
         console.error("출연진을 추가하는 중에 오류가 발생했습니다.", error);
         alert(error.response.data.message || '출연진을 추가하는 중 오류가 발생했습니다.');
+      })
+      .finally(() => {
+        this.isAddingRound = false;  // 요청 완료 후 버튼을 활성화
       });
     },
     openEditPerformerModal(performer) {
