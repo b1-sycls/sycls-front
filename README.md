@@ -1,6 +1,8 @@
-# sycls-front
+# 에티켓(Every Ticket)
 
-This template should help get you started developing with Vue 3 in Vite.
+## 백엔드 깃허브 주소
+[Backend Repository](https://github.com/b1-sycls/sycls)
+READ ME 는 해당 링크에서 참고 부탁드립니다.
 
 ## Recommended IDE Setup
 
@@ -27,4 +29,3 @@ npm run dev
 ```sh
 npm run build
 ```
-# sycls-front
